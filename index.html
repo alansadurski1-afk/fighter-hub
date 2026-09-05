@@ -106,8 +106,8 @@
 <body class="min-h-screen flex flex-col justify-between selection:bg-app-red selection:text-white antialiased">
 
   <!-- ================= EKRAN AUTORYZACJI ================= -->
-  <div id="authScreen" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col justify-center items-center px-4 overflow-y-auto py-8">
-    <div class="max-w-sm w-full space-y-4">
+  <div id="authScreen" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col items-center px-4 overflow-y-auto py-8 min-h-screen">
+    <div class="max-w-sm w-full space-y-4 my-auto">
       
       <!-- Logo nagłówka -->
       <div class="text-center space-y-1">
@@ -118,17 +118,17 @@
         <p class="text-xs text-app-muted font-medium">Społeczność & Trening Zawodników MMA</p>
       </div>
 
-      <!-- Przełącznik -->
+      <!-- Przełącznik Logowanie / Rejestracja -->
       <div id="authTabGroup" class="glass-panel rounded-2xl p-1 flex">
-        <button onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-app-red text-white shadow-md">
+        <button type="button" onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all bg-app-red text-white shadow-md cursor-pointer">
           Logowanie
         </button>
-        <button onclick="switchAuthMode('register')" id="authTabRegister" class="flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all text-app-muted">
+        <button type="button" onclick="switchAuthMode('register')" id="authTabRegister" class="flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all text-app-muted hover:text-white cursor-pointer">
           Rejestracja
         </button>
       </div>
 
-      <!-- 1. FORMULARZ LOGOWANIA -->
+      <!-- 1. LOGOWANIE -->
       <form id="loginForm" onsubmit="handleLoginStep1(event)" class="glass-panel rounded-3xl p-5 space-y-3.5 tab-animate">
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Adres E-mail</label>
@@ -143,7 +143,7 @@
         </button>
       </form>
 
-      <!-- 2. WERYFIKACJA 2FA -->
+      <!-- 2. 2FA -->
       <form id="twoFactorForm" onsubmit="handleLoginStep2(event)" class="glass-panel rounded-3xl p-5 space-y-4 hidden modal-pop">
         <div class="text-center space-y-1">
           <div class="w-10 h-10 rounded-2xl bg-cyan-950/60 border border-cyan-800 text-cyan-400 flex items-center justify-center mx-auto mb-1">
@@ -166,7 +166,7 @@
         </button>
       </form>
 
-      <!-- 3. REJESTRACJA Z WYBOREM SPORTÓW -->
+      <!-- 3. REJESTRACJA -->
       <form id="registerForm" onsubmit="handleRegister(event)" class="glass-panel rounded-3xl p-5 space-y-3 hidden tab-animate">
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Imię i Nazwisko</label>
@@ -184,6 +184,7 @@
           </div>
         </div>
 
+        <!-- Co trenujesz? -->
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1.5">Wybierz swoje sztuki walki:</label>
           <div class="grid grid-cols-3 gap-1.5 text-[10px]" id="regDisciplinesGroup">
@@ -276,10 +277,10 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- PRZYCISK POWIADOMIEŃ -->
+        <!-- PRZYCISK DZWONKA / POWIADOMIEŃ -->
         <button onclick="toggleModal('notificationsModal', true)" class="relative p-2 rounded-xl bg-app-card border border-app-border hover:border-app-borderLight text-gray-200 active:scale-95 transition-all">
           <i data-lucide="bell" class="w-5 h-5"></i>
-          <span id="notifBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-app-red text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">0</span>
+          <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-app-red text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">2</span>
         </button>
 
         <!-- AWATAR PROFILOWY -->
@@ -314,7 +315,7 @@
             </span>
           </div>
 
-          <!-- Styl tagi -->
+          <!-- Styl / Co trenujesz tagi na ekranie głównym -->
           <div class="flex flex-wrap gap-1.5 pt-1" id="homeDisciplinesTags"></div>
 
           <!-- Waga i stan formy -->
@@ -369,14 +370,14 @@
             <div class="p-2.5 rounded-xl bg-cyan-950/60 text-cyan-400 border border-cyan-800"><i data-lucide="bell" class="w-5 h-5"></i></div>
             <div>
               <div class="text-xs font-black text-white font-title uppercase">Oferty</div>
-              <div class="text-[10px] text-app-muted">Powiadomienia</div>
+              <div class="text-[10px] text-app-muted">Sparingi Live</div>
             </div>
           </div>
         </div>
 
       </div>
 
-      <!-- ================= 2. TAB TRENING (8 PEŁNYCH PROGRAMÓW) ================= -->
+      <!-- ================= 2. TAB TRENING (8 PEŁNYCH PROGRAMÓW Z WIDEO) ================= -->
       <div id="tab-training" class="space-y-4 hidden tab-animate">
         <div class="pt-1">
           <span class="text-[10px] font-black text-app-red uppercase tracking-widest">Katalog Walki</span>
@@ -384,6 +385,7 @@
           <p class="text-xs text-app-muted">Instruktaże techniczne i siłowe dla zawodników MMA.</p>
         </div>
 
+        <!-- Filtry dyscyplin -->
         <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           <button onclick="filterTrainingList('ALL')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap" id="tf-all">Wszystkie (8)</button>
           <button onclick="filterTrainingList('STRIKING')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-striking">🥊 Boks & K-1</button>
@@ -447,7 +449,7 @@
           <!-- INTERAKTYWNY WYBÓR TWOICH SZTUK WALKI -->
           <div class="bg-black/40 border border-app-border rounded-2xl p-3 space-y-2">
             <div class="flex justify-between items-center">
-              <span class="text-[10px] font-bold text-gray-300 uppercase block">Twoje Sztuki Walki (Wybierz):</span>
+              <span class="text-[10px] font-bold text-gray-300 uppercase block">Twoje Sztuki Walki:</span>
               <span class="text-[9px] text-emerald-400 font-semibold" id="stylesSavedNotice"></span>
             </div>
             <div class="flex flex-wrap gap-1.5" id="profileStylesSelector"></div>
@@ -509,7 +511,7 @@
     </nav>
   </div>
 
-  <!-- ================= MODAL 1: CZYSTE OKNO POWIADOMIEŃ ================= -->
+  <!-- ================= MODAL 1: OKNO POWIADOMIEŃ ================= -->
   <div id="notificationsModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3">
     <div class="glass-panel rounded-3xl max-w-sm w-full p-4 relative max-h-[85vh] overflow-y-auto flex flex-col justify-between modal-pop">
       <div>
@@ -525,11 +527,63 @@
           </button>
         </div>
 
-        <!-- Czysta lista powiadomień na start -->
         <div class="space-y-2.5" id="notificationsList">
-          <div class="text-center text-xs text-app-muted py-8" id="emptyNotifNotice">
-            <i data-lucide="bell-off" class="w-8 h-8 text-app-muted mx-auto mb-2 opacity-50"></i>
-            Brak nowych powiadomień.
+          <div class="bg-black/50 border border-app-border rounded-2xl p-3 space-y-2.5" id="notif-card-1">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-red-950/60 text-app-red font-black text-[11px] flex items-center justify-center border border-app-border">
+                  MK
+                </div>
+                <div>
+                  <span class="text-xs font-black text-white">Mateusz Kowalczyk</span>
+                  <span class="text-[9px] text-app-muted block">Berkut WCA • Kat. -77kg</span>
+                </div>
+              </div>
+              <span class="text-[9px] font-extrabold text-amber-400 bg-amber-950/40 border border-amber-900/60 px-2 py-0.5 rounded">Oferta sparingu</span>
+            </div>
+            <p class="text-[11px] text-gray-300">
+              „Siemanko! Robimy w ten piątek mocne 5 rund po 5 minut pod walkę klatkową w Warszawie?”
+            </p>
+            <div class="flex gap-2 pt-1">
+              <button onclick="acceptSparringOffer('Mateusz Kowalczyk', 'notif-card-1')" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-title text-[10px] font-black uppercase rounded-xl transition-all">
+                Akceptuj 🥊
+              </button>
+              <button onclick="rejectSparringOffer('notif-card-1')" class="flex-1 py-1.5 bg-black/60 border border-app-border hover:border-rose-800 text-rose-400 font-title text-[10px] font-black uppercase rounded-xl transition-all">
+                Odrzuć ✕
+              </button>
+              <button onclick="openDirectChat('Mateusz Kowalczyk'); closeModal('notificationsModal');" class="p-1.5 bg-cyan-950/60 border border-cyan-800 text-cyan-400 rounded-xl">
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-black/50 border border-app-border rounded-2xl p-3 space-y-2.5" id="notif-card-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-red-950/60 text-app-red font-black text-[11px] flex items-center justify-center border border-app-border">
+                  PN
+                </div>
+                <div>
+                  <span class="text-xs font-black text-white">Piotr Nowak</span>
+                  <span class="text-[9px] text-app-muted block">Ankos MMA • Kat. -77kg</span>
+                </div>
+              </div>
+              <span class="text-[9px] font-extrabold text-amber-400 bg-amber-950/40 border border-amber-900/60 px-2 py-0.5 rounded">Oferta sparingu</span>
+            </div>
+            <p class="text-[11px] text-gray-300">
+              „Cześć, szukam kogoś do stójki i klinczu pod siatką w sobotę rano. Daj znać czy masz wolne.”
+            </p>
+            <div class="flex gap-2 pt-1">
+              <button onclick="acceptSparringOffer('Piotr Nowak', 'notif-card-2')" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-title text-[10px] font-black uppercase rounded-xl transition-all">
+                Akceptuj 🥊
+              </button>
+              <button onclick="rejectSparringOffer('notif-card-2')" class="flex-1 py-1.5 bg-black/60 border border-app-border hover:border-rose-800 text-rose-400 font-title text-[10px] font-black uppercase rounded-xl transition-all">
+                Odrzuć ✕
+              </button>
+              <button onclick="openDirectChat('Piotr Nowak'); closeModal('notificationsModal');" class="p-1.5 bg-cyan-950/60 border border-cyan-800 text-cyan-400 rounded-xl">
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -540,10 +594,9 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 2: CZYSTY CZAT 1 NA 1 ================= -->
+  <!-- ================= MODAL 2: OKNO CZATU 1 NA 1 ================= -->
   <div id="chatModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3">
     <div class="glass-panel rounded-3xl max-w-sm w-full p-4 relative h-[80vh] flex flex-col justify-between modal-pop">
-      <!-- Nagłówek czatu -->
       <div class="flex justify-between items-center border-b border-app-border pb-2.5">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-app-redDark to-app-red text-white font-black text-xs flex items-center justify-center" id="chatTargetAvatar">
@@ -561,12 +614,8 @@
         </button>
       </div>
 
-      <!-- Wiadomości (czyste na start) -->
-      <div class="flex-1 overflow-y-auto py-3 space-y-2.5 text-xs" id="chatMessagesContainer">
-        <!-- Renderowane dynamicznie -->
-      </div>
+      <div class="flex-1 overflow-y-auto py-3 space-y-2.5 text-xs" id="chatMessagesContainer"></div>
 
-      <!-- Wpisywanie wiadomości -->
       <form onsubmit="sendChatMessage(event)" class="flex gap-2 pt-2 border-t border-app-border">
         <input type="text" id="chatTextInput" required placeholder="Napisz wiadomość..." class="flex-1 bg-black/60 border border-app-border rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-app-red" />
         <button type="submit" class="p-2.5 bg-gradient-to-r from-app-red to-app-redDark text-white rounded-xl active:scale-95">
@@ -634,17 +683,20 @@
     let liveFightersList = [];
     let selectedImageBase64 = null;
     let currentDailyWorkout = null;
-    
-    // Polubienia w localStorage
     let userLikedPostIds = new Set(JSON.parse(localStorage.getItem('fh_liked_posts') || '[]'));
 
-    // Lista sztuk walki
     const ALL_COMBAT_STYLES = ['MMA', 'BJJ', 'Boks', 'Zapasy', 'Muay Thai', 'K-1', 'Judo', 'Kickboxing'];
 
-    // Czyste historie czatów oraz powiadomień
     let activeChatPartner = null;
-    let chatHistories = JSON.parse(localStorage.getItem('fh_chat_histories') || '{}');
-    let activeNotifications = [];
+    let chatHistories = {
+      'Mateusz Kowalczyk': [
+        { from: 'them', text: 'Siemanko! Robimy w ten piątek mocne 5 rund po 5 minut pod walkę klatkową?' },
+        { from: 'me', text: 'Cześć! Bardzo chętnie, o której godzinie w WCA?' }
+      ],
+      'Piotr Nowak': [
+        { from: 'them', text: 'Cześć, szukam kogoś do stójki i klinczu pod siatką w sobotę rano.' }
+      ]
+    };
 
     // 8 PROGRAMÓW TRENINGOWYCH
     const workoutPrograms = [
@@ -761,19 +813,21 @@
       const registerForm = document.getElementById('registerForm');
       const tabLogin = document.getElementById('authTabLogin');
       const tabRegister = document.getElementById('authTabRegister');
-      document.getElementById('authErrorMsg').classList.add('hidden');
-      twoFactorForm.classList.add('hidden');
+      const errorEl = document.getElementById('authErrorMsg');
+
+      if (errorEl) errorEl.classList.add('hidden');
+      if (twoFactorForm) twoFactorForm.classList.add('hidden');
 
       if (mode === 'login') {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-        tabLogin.className = "flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-app-red text-white shadow-md";
-        tabRegister.className = "flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all text-app-muted";
+        if (loginForm) loginForm.classList.remove('hidden');
+        if (registerForm) registerForm.classList.add('hidden');
+        if (tabLogin) tabLogin.className = "flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all bg-app-red text-white shadow-md cursor-pointer";
+        if (tabRegister) tabRegister.className = "flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all text-app-muted hover:text-white cursor-pointer";
       } else {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
-        tabRegister.className = "flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-app-red text-white shadow-md";
-        tabLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all text-app-muted";
+        if (loginForm) loginForm.classList.add('hidden');
+        if (registerForm) registerForm.classList.remove('hidden');
+        if (tabRegister) tabRegister.className = "flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all bg-app-red text-white shadow-md cursor-pointer";
+        if (tabLogin) tabLogin.className = "flex-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all text-app-muted hover:text-white cursor-pointer";
       }
     }
 
@@ -992,7 +1046,7 @@
       container.innerHTML = ALL_COMBAT_STYLES.map(style => {
         const isSelected = selectedList.includes(style);
         return `
-          <button onclick="toggleFighterStyle('${style}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${isSelected ? 'bg-app-red text-white shadow' : 'bg-black/40 border border-app-border text-gray-400 hover:border-gray-500'}">
+          <button type="button" onclick="toggleFighterStyle('${style}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all ${isSelected ? 'bg-app-red text-white shadow' : 'bg-black/40 border border-app-border text-gray-400 hover:border-gray-500'}">
             ${isSelected ? '✓ ' : '+ '} ${style}
           </button>
         `;
@@ -1003,4 +1057,417 @@
       if (!currentUserProfile) return;
       let currentStyles = (currentUserProfile.medals || '').split(',').map(s => s.trim()).filter(Boolean);
       
-      if (currentStyles
+      if (currentStyles.includes(style)) {
+        currentStyles = currentStyles.filter(s => s !== style);
+      } else {
+        currentStyles.push(style);
+      }
+
+      const updatedStr = currentStyles.join(', ');
+      currentUserProfile.medals = updatedStr;
+      updateProfileUI();
+
+      const notice = document.getElementById('stylesSavedNotice');
+      notice.innerText = "Zapisano ✓";
+      setTimeout(() => notice.innerText = "", 2000);
+
+      await db.from('profiles').update({ medals: updatedStr }).eq('id', currentUserProfile.id);
+    }
+
+    async function handleAvatarFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file || !currentUserProfile) return;
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const base64 = evt.target.result;
+        currentUserProfile.avatar_url = base64;
+        updateProfileUI();
+        await db.from('profiles').update({ avatar_url: base64 }).eq('id', currentUserProfile.id);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ================= 4. POSTY & LAJKI =================
+    async function loadPostsFromSupabase() {
+      const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        renderPosts(data);
+      }
+    }
+
+    function renderPosts(posts) {
+      const container = document.getElementById('profileFeedContainer');
+      if (!posts || posts.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak postów. Bądź pierwszym zawodnikiem, który doda wpis!</div>`;
+        return;
+      }
+
+      container.innerHTML = posts.map(p => {
+        const isLiked = userLikedPostIds.has(p.id);
+        const likeCount = (p.likes_count || 0) + (isLiked && !(p.likes_count > 0) ? 1 : 0);
+
+        return `
+        <div class="glass-panel rounded-3xl overflow-hidden space-y-2.5">
+          <div class="p-3.5 flex items-center justify-between border-b border-app-border/60">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-black/60 border border-app-border text-app-red font-title font-black flex items-center justify-center text-xs">
+                ${p.author_name ? p.author_name.substring(0,2).toUpperCase() : 'PL'}
+              </div>
+              <div>
+                <h4 class="text-xs font-black text-white uppercase">${p.author_name}</h4>
+                <p class="text-[10px] text-app-muted font-medium">${p.club} • ${new Date(p.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+              </div>
+            </div>
+            <span class="text-[9px] font-extrabold text-app-red bg-rose-950/40 border border-rose-900/60 px-2 py-0.5 rounded-lg uppercase">Wpis z maty</span>
+          </div>
+
+          ${p.text_content ? `<p class="px-3.5 text-xs text-gray-200 leading-relaxed">${p.text_content}</p>` : ''}
+          ${p.image_url ? `<div class="px-3"><img src="${p.image_url}" class="w-full h-52 object-cover rounded-2xl bg-black border border-app-border" /></div>` : ''}
+
+          <div class="px-3.5 pb-3 pt-1 flex items-center justify-between">
+            <button type="button" onclick="toggleLikePost('${p.id}', this)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 ${isLiked ? 'bg-rose-950/60 border-rose-600 text-app-red' : 'bg-black/40 border-app-border text-gray-400 hover:text-white'}">
+              <i data-lucide="heart" class="w-4 h-4 ${isLiked ? 'fill-current text-app-red' : ''}"></i>
+              <span class="text-xs font-bold like-counter">${likeCount}</span>
+            </button>
+            <span class="text-[10px] text-app-muted">FighterHub Social</span>
+          </div>
+        </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function toggleLikePost(postId, btnElement) {
+      const isLiked = userLikedPostIds.has(postId);
+      const counterEl = btnElement.querySelector('.like-counter');
+      let currentLikes = parseInt(counterEl.innerText) || 0;
+
+      if (isLiked) {
+        userLikedPostIds.delete(postId);
+        currentLikes = Math.max(0, currentLikes - 1);
+        btnElement.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 bg-black/40 border-app-border text-gray-400 hover:text-white";
+        btnElement.querySelector('i').classList.remove('fill-current', 'text-app-red');
+      } else {
+        userLikedPostIds.add(postId);
+        currentLikes += 1;
+        btnElement.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 bg-rose-950/60 border-rose-600 text-app-red";
+        btnElement.querySelector('i').classList.add('fill-current', 'text-app-red');
+      }
+
+      counterEl.innerText = currentLikes;
+      localStorage.setItem('fh_liked_posts', JSON.stringify(Array.from(userLikedPostIds)));
+      await db.from('posts').update({ likes_count: currentLikes }).eq('id', postId);
+    }
+
+    async function publishPostToSupabase() {
+      if (!currentUserProfile) return;
+      const text = document.getElementById('postTextInput').value.trim();
+      if (!text && !selectedImageBase64) return;
+
+      const { error } = await db.from('posts').insert([{
+        author_name: currentUserProfile.full_name,
+        club: currentUserProfile.club,
+        text_content: text,
+        image_url: selectedImageBase64,
+        likes_count: 0
+      }]);
+
+      if (error) {
+        alert("Błąd: " + error.message);
+        return;
+      }
+
+      document.getElementById('postTextInput').value = '';
+      selectedImageBase64 = null;
+      document.getElementById('photoUploadedNotice').innerText = "Dodaj zdjęcie";
+      loadPostsFromSupabase();
+    }
+
+    function handleImageFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          selectedImageBase64 = evt.target.result;
+          document.getElementById('photoUploadedNotice').innerText = "Zdjęcie wybrane ✓";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // ================= 5. CZAT 1 NA 1 =================
+    function openDirectChat(fighterName) {
+      activeChatPartner = fighterName;
+      document.getElementById('chatTargetName').innerText = fighterName;
+      document.getElementById('chatTargetAvatar').innerText = fighterName.substring(0,2).toUpperCase();
+
+      if (!chatHistories[fighterName]) {
+        chatHistories[fighterName] = [
+          { from: 'them', text: `Cześć! Z chęcią potrenuję lub posparuję. Kiedy masz wolny termin?` }
+        ];
+      }
+
+      renderChatMessages();
+      toggleModal('chatModal', true);
+    }
+
+    function renderChatMessages() {
+      const container = document.getElementById('chatMessagesContainer');
+      const messages = chatHistories[activeChatPartner] || [];
+
+      container.innerHTML = messages.map(m => {
+        const isMe = m.from === 'me';
+        return `
+          <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[80%] p-2.5 rounded-2xl ${isMe ? 'bg-app-red text-white rounded-br-sm' : 'bg-black/60 border border-app-border text-gray-200 rounded-bl-sm'}">
+              <p class="leading-relaxed text-[11px]">${m.text}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatTextInput');
+      const msg = input.value.trim();
+      if (!msg || !activeChatPartner) return;
+
+      chatHistories[activeChatPartner].push({ from: 'me', text: msg });
+      input.value = '';
+      renderChatMessages();
+
+      setTimeout(() => {
+        if (activeChatPartner) {
+          chatHistories[activeChatPartner].push({ from: 'them', text: 'Pasuje! Zapisuję w kalendarzu, do zobaczenia na macie!' });
+          renderChatMessages();
+        }
+      }, 1500);
+    }
+
+    // ================= 6. POWIADOMIENIA (AKCEPTUJ / ODRZUĆ) =================
+    function acceptSparringOffer(fighterName, cardId) {
+      alert(`🥊 Zaakceptowano ofertę sparingu od: ${fighterName}! Rozpocznij rozmowę, by ustalić szczegóły.`);
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.innerHTML = `
+          <div class="flex items-center justify-between text-emerald-400 font-bold text-xs py-1">
+            <span>✓ Oferta sparingu zaakceptowana!</span>
+            <button type="button" onclick="openDirectChat('${fighterName}'); closeModal('notificationsModal');" class="px-2 py-1 bg-cyan-950/60 border border-cyan-800 text-cyan-400 rounded-lg text-[10px]">
+              Napisz 💬
+            </button>
+          </div>
+        `;
+      }
+      updateNotifBadge();
+    }
+
+    function rejectSparringOffer(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.remove();
+      }
+      updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+      const remaining = document.querySelectorAll('#notificationsList > div').length;
+      const badge = document.getElementById('notifBadge');
+      if (remaining > 0) {
+        badge.innerText = remaining;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+        document.getElementById('notificationsList').innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak nowych powiadomień.</div>`;
+      }
+    }
+
+    // ================= 7. BAZA ZAWODNIKÓW (SUPABASE) =================
+    async function loadFightersFromSupabase() {
+      const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        liveFightersList = data;
+        renderFighters(liveFightersList);
+        updateTotalUsersCount();
+      }
+    }
+
+    function renderFighters(list) {
+      const container = document.getElementById('fightersListContainer');
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak zarejestrowanych zawodników.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(f => {
+        const initials = f.full_name ? f.full_name.substring(0,2).toUpperCase() : 'PL';
+        const hasAvatar = f.avatar_url && f.avatar_url.startsWith('data:image');
+        const styles = f.medals || 'MMA';
+
+        return `
+        <div class="glass-panel rounded-2xl p-3 flex items-center justify-between gap-2 interactive-card">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl overflow-hidden bg-black/60 border border-app-border flex items-center justify-center font-title font-black text-xs text-app-red">
+              ${hasAvatar ? `<img src="${f.avatar_url}" class="w-full h-full object-cover" />` : initials}
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-black text-white uppercase">${f.full_name}</span>
+                <span class="text-[9px] font-bold bg-cyan-950/50 text-cyan-400 border border-cyan-800 px-1.5 py-0.2 rounded">${f.weight_category}</span>
+              </div>
+              <p class="text-[10px] text-app-muted">${f.club} • ${f.city}</p>
+              <span class="text-[10px] text-rose-400 font-bold">🥋 ${styles}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="openDirectChat('${f.full_name}')" class="p-2 bg-black/50 border border-app-border hover:border-cyan-500 text-cyan-400 rounded-xl active:scale-95" title="Napisz wiadomość">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="sendSparringChallenge('${f.full_name}')" class="px-2.5 py-2 bg-gradient-to-r from-app-red to-app-redDark text-white text-[10px] font-black uppercase rounded-xl active:scale-95 shadow">
+              Sparing 🥊
+            </button>
+          </div>
+        </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function sendSparringChallenge(targetName) {
+      alert(`🥊 Wysłano oficjalną ofertę sparingu do zawodnika: ${targetName}! Otrzyma on powiadomienie.`);
+    }
+
+    function filterFightersLive() {
+      const q = document.getElementById('fighterSearchInput').value.toLowerCase();
+      const filtered = liveFightersList.filter(f => 
+        (f.full_name && f.full_name.toLowerCase().includes(q)) || 
+        (f.club && f.club.toLowerCase().includes(q)) ||
+        (f.city && f.city.toLowerCase().includes(q)) ||
+        (f.medals && f.medals.toLowerCase().includes(q))
+      );
+      renderFighters(filtered);
+    }
+
+    // ================= 8. PLAYER TRENINGOWY =================
+    let activeWorkout = null;
+    function startInteractiveWorkout(id) {
+      activeWorkout = workoutPrograms[id];
+      document.getElementById('playerWorkoutTitle').innerText = activeWorkout.title;
+      
+      const embedUrl = `https://www.youtube.com/embed/${activeWorkout.videoId}?rel=0&modestbranding=1`;
+      document.getElementById('playerVideoIframe').src = embedUrl;
+      document.getElementById('playerDirectYoutubeLink').href = `https://www.youtube.com/watch?v=${activeWorkout.videoId}`;
+
+      document.getElementById('playerDrillTitle').innerText = activeWorkout.title;
+      document.getElementById('playerDrillInstructions').innerText = activeWorkout.instructions;
+      toggleModal('workoutPlayerModal', true);
+    }
+
+    async function finishWorkoutInSupabase() {
+      if (currentUserProfile) {
+        const newCount = (currentUserProfile.workouts_count || 0) + 1;
+        await db.from('profiles').update({ workouts_count: newCount }).eq('id', currentUserProfile.id);
+        currentUserProfile.workouts_count = newCount;
+      }
+
+      alert(`🏆 Trening "${activeWorkout.title}" został zaliczony i zapisany!`);
+      document.getElementById('playerVideoIframe').src = "";
+      toggleModal('workoutPlayerModal', false);
+    }
+
+    function renderTrainingCards(category = 'ALL') {
+      const c = document.getElementById('trainingCardsContainer');
+      const list = category === 'ALL' ? workoutPrograms : workoutPrograms.filter(w => w.category === category);
+
+      c.innerHTML = list.map(w => `
+        <div class="glass-panel rounded-3xl p-4 space-y-2 interactive-card">
+          <span class="text-[9px] font-extrabold text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded-md uppercase">${w.badge}</span>
+          <h3 class="font-title text-sm font-black text-white uppercase">${w.title}</h3>
+          <p class="text-xs text-app-muted leading-relaxed">${w.desc}</p>
+          <button type="button" onclick="startInteractiveWorkout(${w.id})" class="w-full mt-2 py-2.5 bg-black/50 border border-app-border hover:border-app-red text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current text-app-red"></i> Rozpocznij Instruktaż
+          </button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterTrainingList(cat) {
+      document.querySelectorAll('.t-filter-btn').forEach(b => {
+        b.className = 't-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap transition-all';
+      });
+      document.getElementById(`tf-${cat.toLowerCase()}`).className = 't-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap transition-all shadow-md';
+      renderTrainingCards(cat);
+    }
+
+    // ================= 9. ZAPIS WAGI =================
+    function openWeightUpdateModal() {
+      if (currentUserProfile) {
+        document.getElementById('quickWeightInput').value = currentUserProfile.current_weight;
+      }
+      toggleModal('weightUpdateModal', true);
+    }
+
+    async function saveQuickWeight() {
+      const val = parseFloat(document.getElementById('quickWeightInput').value);
+      if (val > 30 && val < 200 && currentUserProfile) {
+        await db.from('profiles').update({ current_weight: val }).eq('id', currentUserProfile.id);
+        currentUserProfile.current_weight = val;
+        updateProfileUI();
+        toggleModal('weightUpdateModal', false);
+      }
+    }
+
+    // ================= 10. NAWIGACJA Z PŁYNNYMI PRZEJŚCIAMI =================
+    function switchTab(t) {
+      ['home', 'training', 'fighters', 'profile'].forEach(tab => {
+        const el = document.getElementById(`tab-${tab}`);
+        if(el) {
+          el.classList.add('hidden');
+          el.classList.remove('block', 'tab-animate');
+        }
+        const btn = document.getElementById(`nav-btn-${tab}`);
+        if(btn) {
+          btn.classList.remove('text-app-red');
+          btn.classList.add('text-app-muted');
+        }
+      });
+
+      const activeTabEl = document.getElementById(`tab-${t}`);
+      if(activeTabEl) {
+        activeTabEl.classList.remove('hidden');
+        activeTabEl.classList.add('block', 'tab-animate');
+      }
+
+      const activeBtn = document.getElementById(`nav-btn-${t}`);
+      if(activeBtn) {
+        activeBtn.classList.remove('text-app-muted');
+        activeBtn.classList.add('text-app-red');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleModal(id, open) {
+      const el = document.getElementById(id);
+      if (open) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      } else {
+        el.classList.remove('flex');
+        el.classList.add('hidden');
+      }
+    }
+
+    function closeModal(id) {
+      if(id === 'workoutPlayerModal') document.getElementById('playerVideoIframe').src = "";
+      toggleModal(id, false);
+    }
+
+    // Start
+    checkAuthSession();
+  </script>
+</body>
+</html>
