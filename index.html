@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#0c0d12" />
-  <title>FIGHTER HUB // System Treningowy MMA</title>
+  <meta name="theme-color" content="#0a0c10" />
+  <title>FIGHTER HUB // Polish Combat Performance Hub</title>
 
   <!-- Tailwind CSS & Lucide Icons & Google Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -24,17 +24,17 @@
         extend: {
           colors: {
             app: {
-              bg: '#0c0d12',
-              card: '#131722',
-              cardHover: '#181d2b',
-              border: '#202637',
-              borderLight: '#2b344a',
+              bg: '#0a0c10',
+              card: '#12151e',
+              cardHover: '#181c28',
+              border: '#1f2536',
+              borderLight: '#2c344a',
               red: '#e11d48',
               redDark: '#9f1239',
               gold: '#d97706',
               cyan: '#0284c7',
               emerald: '#059669',
-              muted: '#8e9bb2'
+              muted: '#7f8ea3'
             }
           },
           fontFamily: {
@@ -47,24 +47,81 @@
   </script>
 
   <style>
-    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    body { background-color: #0c0d12; font-family: 'Inter', sans-serif; padding-top: env(safe-area-inset-top); }
-    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem); }
-    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4); }
+    * { 
+      -webkit-tap-highlight-color: transparent; 
+      box-sizing: border-box; 
+    }
+    body { 
+      background-color: #0a0c10; 
+      font-family: 'Inter', sans-serif; 
+      padding-top: env(safe-area-inset-top); 
+    }
+    .safe-bottom { 
+      padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem); 
+    }
+    .card-shadow { 
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45); 
+    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ================= PŁYNNE ANIMACJE ================= */
+    .tab-animate {
+      animation: tabFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes tabFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-pop {
+      animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes modalPopIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shakeError 0.35s ease-in-out;
+    }
+
+    /* Płynne kliknięcia i interakcje */
+    button, .interactive-card {
+      transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    }
+    button:active, .interactive-card:active {
+      transform: scale(0.97);
+    }
   </style>
 </head>
 
 <body class="text-gray-200 antialiased min-h-screen flex flex-col justify-between selection:bg-app-red selection:text-white">
 
-  <!-- ================= EKRAN AUTORYZACJI (LOGOWANIE / REJESTRACJA) ================= -->
+  <!-- ================= EKRAN AUTORYZACJI (LOGOWANIE / 2FA / REJESTRACJA) ================= -->
   <div id="authScreen" class="fixed inset-0 z-50 bg-app-bg flex flex-col justify-center items-center px-4 overflow-y-auto py-8">
     <div class="max-w-sm w-full space-y-5">
       
       <!-- Logo nagłówka -->
       <div class="text-center space-y-1">
-        <div class="w-12 h-12 bg-app-red rounded-2xl flex items-center justify-center font-title font-black text-white text-xl shadow-lg mx-auto mb-2">
+        <div class="w-12 h-12 bg-app-card border border-app-border rounded-2xl flex items-center justify-center font-title font-black text-app-red text-xl shadow mx-auto mb-2 transition-transform duration-300 hover:scale-105">
           PL
         </div>
         <h1 class="font-title text-2xl font-black uppercase text-white tracking-wider">FIGHTER<span class="text-app-red">HUB</span></h1>
@@ -72,8 +129,8 @@
       </div>
 
       <!-- Przełącznik: Logowanie / Rejestracja -->
-      <div class="bg-app-card border border-app-border rounded-xl p-1 flex">
-        <button onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-app-red text-white">
+      <div id="authTabGroup" class="bg-app-card border border-app-border rounded-xl p-1 flex transition-all">
+        <button onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-app-border text-white shadow-sm">
           Logowanie
         </button>
         <button onclick="switchAuthMode('register')" id="authTabRegister" class="flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all text-app-muted">
@@ -81,43 +138,66 @@
         </button>
       </div>
 
-      <!-- FORMULARZ LOGOWANIA -->
-      <form id="loginForm" onsubmit="handleLogin(event)" class="bg-app-card border border-app-border rounded-2xl p-5 card-shadow space-y-3.5">
+      <!-- 1. FORMULARZ LOGOWANIA (KROK 1) -->
+      <form id="loginForm" onsubmit="handleLoginStep1(event)" class="bg-app-card border border-app-border rounded-2xl p-5 card-shadow space-y-3.5 tab-animate">
         <div>
           <label class="block text-xs font-bold text-gray-300 mb-1">Adres E-mail</label>
-          <input type="email" id="loginEmail" required placeholder="twoj@email.pl" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-app-red" />
+          <input type="email" id="loginEmail" required placeholder="twoj@email.pl" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2.5 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
         </div>
         <div>
           <label class="block text-xs font-bold text-gray-300 mb-1">Hasło</label>
-          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-app-red" />
+          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2.5 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
         </div>
         <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all shadow active:scale-95">
-          Zaloguj się
+          Dalej: Weryfikacja 2FA →
         </button>
       </form>
 
-      <!-- FORMULARZ REJESTRACJI NOWEGO ZAWODNIKA -->
-      <form id="registerForm" onsubmit="handleRegister(event)" class="bg-app-card border border-app-border rounded-2xl p-5 card-shadow space-y-3 hidden">
+      <!-- 2. FORMULARZ WERYFIKACJI DWUETAPOWEJ (KROK 2 - 2FA) -->
+      <form id="twoFactorForm" onsubmit="handleLoginStep2(event)" class="bg-app-card border border-app-border rounded-2xl p-5 card-shadow space-y-4 hidden modal-pop">
+        <div class="text-center space-y-1">
+          <div class="w-9 h-9 rounded-xl bg-sky-950/60 border border-sky-800 text-sky-400 flex items-center justify-center mx-auto mb-1">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-title text-sm font-bold uppercase text-white">Weryfikacja Dwuetapowa (2FA)</h3>
+          <p class="text-[11px] text-app-muted">Wpisz swój 6-cyfrowy kod PIN bezpieczeństwa ustalony przy rejestracji.</p>
+        </div>
+
+        <div>
+          <input type="password" id="twoFactorPinInput" maxlength="6" pattern="[0-9]{6}" required placeholder="••••••" class="w-full bg-black/60 border border-app-border rounded-xl py-3 text-center text-lg font-mono tracking-widest text-white transition-all focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <button type="submit" id="twoFactorSubmitBtn" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-title text-xs font-bold uppercase rounded-xl transition-all shadow active:scale-95">
+          Zatwierdź i Wejdź do Aplikacji
+        </button>
+
+        <button type="button" onclick="cancel2FA()" class="w-full text-center text-[11px] text-app-muted hover:text-white font-bold transition-colors">
+          ← Wróć do logowania
+        </button>
+      </form>
+
+      <!-- 3. FORMULARZ REJESTRACJI -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="bg-app-card border border-app-border rounded-2xl p-5 card-shadow space-y-3 hidden tab-animate">
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Imię i Nazwisko</label>
-          <input type="text" id="regFullName" required placeholder="np. Jan Kowalski" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-red" />
+          <input type="text" id="regFullName" required placeholder="np. Jan Kowalski" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[11px] font-bold text-gray-300 mb-1">Klub</label>
-            <input type="text" id="regClub" required placeholder="np. WCA Warszawa" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-red" />
+            <input type="text" id="regClub" required placeholder="np. WCA Warszawa" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
           </div>
           <div>
             <label class="block text-[11px] font-bold text-gray-300 mb-1">Miasto</label>
-            <input type="text" id="regCity" required placeholder="np. Warszawa" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-red" />
+            <input type="text" id="regCity" required placeholder="np. Warszawa" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="block text-[10px] font-bold text-gray-300 mb-1">Kategoria</label>
-            <select id="regWeightCat" class="w-full bg-black/50 border border-app-border rounded-xl px-1.5 py-2 text-[11px] text-white">
+            <select id="regWeightCat" class="w-full bg-black/50 border border-app-border rounded-xl px-1.5 py-2 text-[11px] text-white transition-all">
               <option value="-61kg">-61 kg</option>
               <option value="-66kg">-66 kg</option>
               <option value="-70kg">-70 kg</option>
@@ -129,26 +209,34 @@
           </div>
           <div>
             <label class="block text-[10px] font-bold text-gray-300 mb-1">Waga dziś (kg)</label>
-            <input type="number" step="0.1" id="regCurrentWeight" required placeholder="79.5" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white" />
+            <input type="number" step="0.1" id="regCurrentWeight" required placeholder="79.5" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white transition-all" />
           </div>
           <div>
             <label class="block text-[10px] font-bold text-gray-300 mb-1">Limit (kg)</label>
-            <input type="number" step="0.1" id="regTargetWeight" required placeholder="77.1" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white" />
+            <input type="number" step="0.1" id="regTargetWeight" required placeholder="77.1" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white transition-all" />
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Adres E-mail</label>
-          <input type="email" id="regEmail" required placeholder="twoj@email.pl" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-red" />
+          <input type="email" id="regEmail" required placeholder="twoj@email.pl" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
         </div>
 
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Hasło (min. 6 znaków)</label>
-          <input type="password" id="regPassword" required minlength="6" placeholder="••••••••" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-red" />
+          <input type="password" id="regPassword" required minlength="6" placeholder="••••••••" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white transition-all focus:outline-none focus:border-app-borderLight" />
         </div>
 
-        <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-title text-xs font-bold uppercase rounded-xl transition-all shadow active:scale-95">
-          Zarejestruj Konto Zawodnika
+        <div class="p-2.5 bg-black/40 border border-app-border rounded-xl">
+          <label class="block text-[11px] font-bold text-sky-400 mb-1 flex items-center gap-1">
+            <i data-lucide="lock" class="w-3 h-3"></i> Ustaw 6-cyfrowy PIN 2FA
+          </label>
+          <input type="password" id="regSecurityPin" maxlength="6" pattern="[0-9]{6}" required placeholder="np. 123456" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono tracking-widest transition-all" />
+          <span class="text-[9px] text-app-muted mt-1 block">Kod wymagany przy każdym logowaniu do konta.</span>
+        </div>
+
+        <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all shadow active:scale-95">
+          Zarejestruj Konto z 2FA
         </button>
       </form>
 
@@ -156,13 +244,13 @@
     </div>
   </div>
 
-  <!-- ================= GŁÓWNA APLIKACJA (WIDOCZNA PO ZALOGOWANIU) ================= -->
+  <!-- ================= GŁÓWNA APLIKACJA ================= -->
   <div id="mainApp" class="hidden min-h-screen flex flex-col justify-between">
     
     <!-- TOP APP BAR -->
-    <header class="sticky top-0 z-40 backdrop-blur-xl bg-app-bg/90 border-b border-app-border px-4 h-14 flex items-center justify-between max-w-md mx-auto w-full">
+    <header class="sticky top-0 z-40 backdrop-blur-xl bg-app-bg/90 border-b border-app-border px-4 h-14 flex items-center justify-between max-w-md mx-auto w-full transition-all">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 bg-app-red rounded-lg flex items-center justify-center font-title font-black text-white text-sm shadow">
+        <div class="w-8 h-8 bg-app-card border border-app-border rounded-lg flex items-center justify-center font-title font-black text-app-red text-sm shadow">
           PL
         </div>
         <div>
@@ -173,8 +261,11 @@
         </div>
       </div>
 
-      <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-app-card border border-app-border px-2.5 py-1 rounded-xl active:scale-95 transition-all">
-        <div class="w-5 h-5 rounded-md bg-app-border flex items-center justify-center text-[10px] font-black text-app-red" id="topAvatarInitials">--</div>
+      <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-app-card border border-app-border hover:border-app-borderLight px-2.5 py-1 rounded-xl active:scale-95 transition-all">
+        <div class="w-6 h-6 rounded-md bg-app-border overflow-hidden flex items-center justify-center text-[10px] font-black text-app-red">
+          <img id="topAvatarImg" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=100" class="w-full h-full object-cover hidden transition-opacity duration-300" />
+          <span id="topAvatarInitials">--</span>
+        </div>
         <span class="text-xs font-bold text-gray-300" id="topWeightLabel">-- kg</span>
       </button>
     </header>
@@ -183,7 +274,7 @@
     <main class="flex-1 max-w-md mx-auto w-full px-4 pt-3 safe-bottom">
 
       <!-- ================= 1. TAB GŁÓWNY (HOME) ================= -->
-      <div id="tab-home" class="space-y-4 block">
+      <div id="tab-home" class="space-y-4 block tab-animate">
         <div class="flex items-center justify-between pt-1">
           <div>
             <span class="text-[10px] font-bold text-app-muted uppercase tracking-wider">Status zawodnika</span>
@@ -192,22 +283,22 @@
               <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> --
             </p>
           </div>
-          <span class="text-[10px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 px-2.5 py-1 rounded-lg">
+          <span class="text-[10px] font-bold bg-app-card border border-app-border text-emerald-400 px-2.5 py-1 rounded-lg">
             CAMP ACTIVE
           </span>
         </div>
 
         <!-- Karta Wagi i Turnieju -->
-        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3 interactive-card">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-black text-amber-500 uppercase tracking-wider flex items-center gap-1">
+              <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider flex items-center gap-1">
                 <i data-lucide="trophy" class="w-3.5 h-3.5"></i> Nadchodzący Start
               </span>
               <h3 class="font-title text-base font-bold text-white uppercase">Mistrzostwa Polski MMA</h3>
               <p class="text-xs text-app-muted">Warszawa • Arena Ursynów</p>
             </div>
-            <span class="text-xs font-bold text-white bg-black/50 px-2 py-1 rounded-lg border border-app-border">
+            <span class="text-xs font-bold text-white bg-black/40 px-2 py-1 rounded-lg border border-app-border">
               Za 14 dni
             </span>
           </div>
@@ -217,41 +308,41 @@
               <span class="text-app-muted">Waga: <b class="text-white" id="homeCurWeight">-- kg</b></span>
               <span class="text-amber-500" id="homeWeightDiff">Limit: -- kg</span>
             </div>
-            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-emerald-500 via-amber-500 to-app-red h-full" id="homeWeightProgressBar" style="width: 80%"></div>
+            <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-emerald-600 via-amber-600 to-app-red h-full transition-all duration-700 ease-out" id="homeWeightProgressBar" style="width: 80%"></div>
             </div>
           </div>
         </div>
 
         <!-- Skrót do dzisiejszego treningu -->
-        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2.5">
+        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2.5 interactive-card">
           <div class="flex justify-between items-center">
             <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Polecany Trening Dnia</span>
-            <span class="text-[10px] text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded">Z Wideo</span>
+            <span class="text-[10px] text-emerald-400 font-bold bg-black/40 border border-app-border px-2 py-0.5 rounded">Z Wideo</span>
           </div>
           <h3 class="font-title text-sm font-bold text-white uppercase">
-            Jab Mastery: Przełamywanie Obrony & Low Kick
+            Jab Mastery: Przełamywanie Obrony & Pivot
           </h3>
           <p class="text-xs text-app-muted leading-relaxed">
-            Instruktaż wideo: praca lewym prostym, zmiana kąta i dewastujący calf kick.
+            Instruktaż wideo Tony'ego Jeffriesa: praca lewym prostym, zmiana tempa i kąta natarcia.
           </p>
           <button onclick="startInteractiveWorkout(0)" class="w-full py-2.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
-            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Rozpocznij Trening
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Rozpocznij Trening z Wideo
           </button>
         </div>
 
         <!-- Kafelki nawigacji -->
         <div class="grid grid-cols-2 gap-2.5">
-          <div onclick="switchTab('training')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer">
-            <div class="p-2.5 rounded-lg bg-rose-500/10 text-rose-400"><i data-lucide="dumbbell" class="w-4 h-4"></i></div>
+          <div onclick="switchTab('training')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer hover:border-app-borderLight">
+            <div class="p-2.5 rounded-lg bg-black/40 text-rose-400 border border-app-border"><i data-lucide="dumbbell" class="w-4 h-4"></i></div>
             <div>
               <div class="text-xs font-bold text-white">Treningi</div>
-              <div class="text-[10px] text-app-muted">Baza z Wideo</div>
+              <div class="text-[10px] text-app-muted">8 Programów z Wideo</div>
             </div>
           </div>
 
-          <div onclick="switchTab('fighters')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer">
-            <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-500"><i data-lucide="users" class="w-4 h-4"></i></div>
+          <div onclick="switchTab('fighters')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer hover:border-app-borderLight">
+            <div class="p-2.5 rounded-lg bg-black/40 text-amber-500 border border-app-border"><i data-lucide="users" class="w-4 h-4"></i></div>
             <div>
               <div class="text-xs font-bold text-white">Zawodnicy</div>
               <div class="text-[10px] text-app-muted">Baza Fighterów PL</div>
@@ -260,12 +351,20 @@
         </div>
       </div>
 
-      <!-- ================= 2. TAB TRENING ================= -->
-      <div id="tab-training" class="space-y-4 hidden">
+      <!-- ================= 2. TAB TRENING (8 PROGRAMÓW Z WIDEO) ================= -->
+      <div id="tab-training" class="space-y-4 hidden tab-animate">
         <div class="pt-1">
-          <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Katalog Treningowy</span>
-          <h2 class="font-title text-xl font-extrabold uppercase text-white">Programy z Wideo YouTube</h2>
+          <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Katalog Szkoleniowy</span>
+          <h2 class="font-title text-xl font-extrabold uppercase text-white">Baza Treningów MMA z Wideo</h2>
           <p class="text-xs text-app-muted">Wybierz sesję – aplikacja przeprowadzi Cię przez ćwiczenia z wideo.</p>
+        </div>
+
+        <!-- Filtry dyscyplin -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button onclick="filterTrainingList('ALL')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-border text-white whitespace-nowrap" id="tf-all">Wszystkie (8)</button>
+          <button onclick="filterTrainingList('STRIKING')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-striking">🥊 Boks & K-1</button>
+          <button onclick="filterTrainingList('GRAPPLING')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-grappling">🤼 Zapasy & BJJ</button>
+          <button onclick="filterTrainingList('MOTOR')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-motor">⚡ Motoryka & Siła</button>
         </div>
 
         <div class="space-y-3" id="trainingCardsContainer">
@@ -274,23 +373,23 @@
       </div>
 
       <!-- ================= 3. TAB PROGRES ================= -->
-      <div id="tab-progress" class="space-y-4 hidden">
+      <div id="tab-progress" class="space-y-4 hidden tab-animate">
         <div class="flex justify-between items-center pt-1">
           <div>
             <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Statystyki Live</span>
             <h2 class="font-title text-xl font-extrabold uppercase text-white">Twój Progres</h2>
           </div>
-          <button onclick="openWeightUpdateModal()" class="px-3 py-1.5 bg-app-card border border-app-border text-xs font-bold text-sky-400 rounded-xl flex items-center gap-1 active:scale-95">
+          <button onclick="openWeightUpdateModal()" class="px-3 py-1.5 bg-app-card border border-app-border text-xs font-bold text-sky-400 rounded-xl flex items-center gap-1 active:scale-95 hover:border-sky-500">
             <i data-lucide="scale" class="w-3.5 h-3.5"></i> Zapisz wagę
           </button>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
-          <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center">
+          <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center interactive-card">
             <span class="text-[10px] font-bold text-app-muted uppercase block">Sparingi</span>
             <span class="font-title text-2xl font-black text-white" id="progSparrings">0</span>
           </div>
-          <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center">
+          <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center interactive-card">
             <span class="text-[10px] font-bold text-app-muted uppercase block">Ukończone sesje</span>
             <span class="font-title text-2xl font-black text-emerald-400" id="progWorkouts">0</span>
           </div>
@@ -298,7 +397,7 @@
       </div>
 
       <!-- ================= 4. TAB ZAWODNICY (Z BAZY SUPABASE) ================= -->
-      <div id="tab-fighters" class="space-y-3.5 hidden">
+      <div id="tab-fighters" class="space-y-3.5 hidden tab-animate">
         <div class="pt-1">
           <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Zarejestrowani Zawodnicy</span>
           <h2 class="font-title text-xl font-extrabold uppercase text-white">Fighterzy w Polsce</h2>
@@ -312,7 +411,7 @@
             id="fighterSearchInput" 
             oninput="filterFightersLive()" 
             placeholder="Szukaj po nazwisku, klubie lub mieście..." 
-            class="w-full bg-app-card border border-app-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-red"
+            class="w-full bg-app-card border border-app-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-borderLight transition-colors"
           />
         </div>
 
@@ -321,14 +420,22 @@
         </div>
       </div>
 
-      <!-- ================= 5. TAB PROFIL & POSTY ================= -->
-      <div id="tab-profile" class="space-y-4 hidden">
+      <!-- ================= 5. TAB PROFIL & POSTY & ZDJĘCIE PROFILOWE ================= -->
+      <div id="tab-profile" class="space-y-4 hidden tab-animate">
         <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
           <div class="flex items-center gap-3.5">
-            <div class="w-16 h-16 rounded-2xl bg-slate-800 border-2 border-app-red p-1 overflow-hidden flex items-center justify-center">
-              <img id="profAvatarImg" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="w-full h-full object-cover rounded-xl" />
+            <div class="relative group cursor-pointer" onclick="document.getElementById('avatarFileInput').click()">
+              <div class="w-16 h-16 rounded-2xl bg-black/60 border border-app-border overflow-hidden flex items-center justify-center transition-transform active:scale-95">
+                <img id="profAvatarImg" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=200" class="w-full h-full object-cover hidden transition-opacity duration-300" />
+                <span id="profAvatarInitials" class="font-title text-lg font-bold text-app-red">--</span>
+              </div>
+              <div class="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-bold transition-opacity">
+                Zmień
+              </div>
             </div>
-            <div>
+            <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelect(event)" />
+
+            <div class="space-y-0.5">
               <h2 class="font-title text-base font-black text-white uppercase" id="profName">--</h2>
               <div class="text-xs text-app-muted flex items-center gap-1 font-semibold" id="profClub">
                 <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> --
@@ -339,18 +446,23 @@
             </div>
           </div>
 
-          <button onclick="handleLogout()" class="w-full py-2 bg-rose-950/60 hover:bg-rose-900/60 border border-rose-900 text-rose-300 font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95">
-            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Wyloguj się
-          </button>
+          <div class="pt-1 flex gap-2">
+            <button onclick="document.getElementById('avatarFileInput').click()" class="flex-1 py-2 bg-black/40 border border-app-border hover:border-app-borderLight text-gray-300 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95">
+              <i data-lucide="camera" class="w-3.5 h-3.5 text-sky-400"></i> Zmień Zdjęcie
+            </button>
+            <button onclick="handleLogout()" class="px-4 py-2 bg-rose-950/30 border border-rose-900/60 hover:bg-rose-950/60 text-rose-300 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Wyloguj
+            </button>
+          </div>
         </div>
 
         <!-- Kreator wpisów -->
         <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
           <span class="text-xs font-bold text-white block">Dodaj post z treningu</span>
-          <textarea id="postTextInput" rows="2" placeholder="Jak poszedł dzisiejszy trening lub sparingi?..." class="w-full bg-black/40 border border-app-border rounded-xl p-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-red"></textarea>
+          <textarea id="postTextInput" rows="2" placeholder="Jak poszedł dzisiejszy trening lub sparingi?..." class="w-full bg-black/40 border border-app-border rounded-xl p-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-borderLight transition-colors"></textarea>
 
           <div class="flex items-center justify-between pt-1">
-            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight rounded-xl text-xs text-gray-300">
+            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight rounded-xl text-xs text-gray-300 transition-all active:scale-95">
               <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-400"></i>
               <span id="photoUploadedNotice">Dodaj zdjęcie</span>
               <input type="file" id="postImageFileInput" accept="image/*" class="hidden" onchange="handleImageFileSelect(event)" />
@@ -372,37 +484,43 @@
 
     <!-- DOLNY PASEK NAWIGACJI -->
     <nav class="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-2xl bg-app-bg/95 border-t border-app-border px-2 py-1.5 flex justify-around items-center max-w-md mx-auto" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
-      <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-red active:scale-90">
+      <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-red transition-transform active:scale-75">
         <i data-lucide="home" class="w-4 h-4"></i><span class="text-[9px] font-bold uppercase">Główny</span>
       </button>
-      <button onclick="switchTab('training')" id="nav-btn-training" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted active:scale-90">
+      <button onclick="switchTab('training')" id="nav-btn-training" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-transform active:scale-75">
         <i data-lucide="dumbbell" class="w-4 h-4"></i><span class="text-[9px] font-bold uppercase">Trening</span>
       </button>
-      <button onclick="switchTab('progress')" id="nav-btn-progress" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted active:scale-90">
+      <button onclick="switchTab('progress')" id="nav-btn-progress" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-transform active:scale-75">
         <i data-lucide="trending-up" class="w-4 h-4"></i><span class="text-[9px] font-bold uppercase">Progres</span>
       </button>
-      <button onclick="switchTab('fighters')" id="nav-btn-fighters" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted active:scale-90">
+      <button onclick="switchTab('fighters')" id="nav-btn-fighters" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-transform active:scale-75">
         <i data-lucide="users" class="w-4 h-4"></i><span class="text-[9px] font-bold uppercase">Zawodnicy</span>
       </button>
-      <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted active:scale-90">
+      <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-transform active:scale-75">
         <i data-lucide="user" class="w-4 h-4"></i><span class="text-[9px] font-bold uppercase">Profil</span>
       </button>
     </nav>
   </div>
 
   <!-- ================= MODAL: PLAYER TRENINGOWY ================= -->
-  <div id="workoutPlayerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden items-center justify-center p-3">
-    <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full p-4 relative max-h-[95vh] overflow-y-auto flex flex-col justify-between">
+  <div id="workoutPlayerModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3 transition-opacity duration-200">
+    <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full p-4 relative max-h-[95vh] overflow-y-auto flex flex-col justify-between modal-pop">
       <div>
         <div class="flex justify-between items-center border-b border-app-border pb-2.5 mb-2.5">
           <h3 class="font-title text-sm font-black text-white uppercase" id="playerWorkoutTitle">Trening</h3>
-          <button onclick="closeModal('workoutPlayerModal')" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
+          <button onclick="closeModal('workoutPlayerModal')" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white transition-colors">
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
 
-        <div class="w-full h-44 rounded-2xl overflow-hidden bg-black border border-app-border mb-3">
-          <iframe id="playerVideoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+        <div class="w-full h-48 rounded-2xl overflow-hidden bg-black border border-app-border mb-2">
+          <iframe id="playerVideoIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+
+        <div class="flex justify-end mb-2">
+          <a id="playerDirectYoutubeLink" href="#" target="_blank" class="text-[11px] text-sky-400 font-bold hover:underline flex items-center gap-1 transition-all">
+            <i data-lucide="external-link" class="w-3 h-3"></i> Otwórz w aplikacji YouTube ↗
+          </a>
         </div>
 
         <div class="bg-black/50 border border-app-border rounded-2xl p-3.5 space-y-2 mb-3 text-xs">
@@ -411,19 +529,19 @@
         </div>
       </div>
 
-      <button onclick="finishWorkoutInSupabase()" class="w-full py-3 bg-app-red text-white font-title text-xs font-bold uppercase rounded-xl">
+      <button onclick="finishWorkoutInSupabase()" class="w-full py-3 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all active:scale-95 shadow">
         Zakończ i Zapisz w Bazie ✓
       </button>
     </div>
   </div>
 
   <!-- ================= MODAL: ZAPIS WAGI ================= -->
-  <div id="weightUpdateModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-app-card border border-app-border rounded-2xl max-w-xs w-full p-5 relative">
-      <button onclick="closeModal('weightUpdateModal')" class="absolute top-4 right-4 text-app-muted p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+  <div id="weightUpdateModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 transition-opacity duration-200">
+    <div class="bg-app-card border border-app-border rounded-2xl max-w-xs w-full p-5 relative modal-pop">
+      <button onclick="closeModal('weightUpdateModal')" class="absolute top-4 right-4 text-app-muted p-1 hover:text-white transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
       <h3 class="font-title text-sm font-bold uppercase text-white mb-3">Zapisz Wagę</h3>
-      <input type="number" step="0.1" id="quickWeightInput" class="w-full bg-black/60 border border-app-border rounded-xl px-3 py-2 text-sm text-white mb-3 text-center font-bold" />
-      <button onclick="saveQuickWeight()" class="w-full py-2 bg-sky-600 hover:bg-sky-500 font-title font-bold text-xs uppercase text-white rounded-xl">Zapisz</button>
+      <input type="number" step="0.1" id="quickWeightInput" class="w-full bg-black/60 border border-app-border rounded-xl px-3 py-2 text-sm text-white mb-3 text-center font-bold focus:outline-none focus:border-sky-500 transition-colors" />
+      <button onclick="saveQuickWeight()" class="w-full py-2 bg-sky-600 hover:bg-sky-500 font-title font-bold text-xs uppercase text-white rounded-xl transition-all active:scale-95">Zapisz</button>
     </div>
   </div>
 
@@ -431,48 +549,93 @@
   <script>
     lucide.createIcons();
 
-    // ============================================================
-    // TUTAJ WKLEJ SWOJE KLUCZE Z SUPABASE (Project Settings -> API):
-    // ============================================================
     const SUPABASE_URL = "https://latwpeaxaijomtdlqfuh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhdHdwZWF4YWlqb210ZGxxZnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MDgzMzEsImV4cCI6MjEwNDE4NDMzMX0.vFoYgb-B2wzHEIFHX9hP78qebSaEDHan7wOfDE7cRho";
 
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Aktualnie zalogowany profil
     let currentUserProfile = null;
+    let pendingAuthUserId = null;
     let liveFightersList = [];
     let selectedImageBase64 = null;
 
-    // Programy treningowe z wideo YouTube
+    // ================= 8 PEŁNYCH PROGRAMÓW TRENINGOWYCH Z DZIAŁAJĄCYM WIDEO =================
     const workoutPrograms = [
       {
         id: 0,
-        title: 'Jab Mastery: Podwójny Prosty & Calf Kick',
+        category: 'STRIKING',
         badge: 'BOKS & STÓJKA',
-        desc: 'Instruktaż wyprowadzania lewego prostego i niskich kopnięć.',
-        videoUrl: 'https://www.youtube.com/embed/p1o1Nq3gZ4Q',
-        instructions: 'Pierwszy jab jako zmyłka. Przy drugim wkręcasz bark w szczękę i kończysz niskim kopnięciem na łydkę.'
+        title: 'Jab Mastery: Podwójny Prosty & Pivot',
+        desc: 'Kompletny instruktaż wyprowadzania lewego prostego, kontroli dystansu i obrotu na nodze wykrocznej.',
+        videoId: 'FSVcmMd9bR4',
+        instructions: 'Pierwszy jab wyprowadzasz miękko w rękawice rywala jako badanie dystansu. Przy drugim wkręcasz mocno bark w szczękę i wykonujesz pivot (odejście pod kątem 90°).'
       },
       {
         id: 1,
-        title: 'Wejścia w Nogi pod Klatką (Double Leg)',
-        badge: 'ZAPASY & KLINCZ',
-        desc: 'Obalenia pod ciosami i kontrola pozycji przy siatce.',
-        videoUrl: 'https://www.youtube.com/embed/mKk3U6m21b8',
-        instructions: 'Zainicjuj prawy sierp. Gdy rywal unosi gardę, obniż biodra i wejdź w obie nogi z głową przy żebrach.'
+        category: 'STRIKING',
+        badge: 'BOKS & K-1',
+        title: 'Kombinacja 1-2 & Slip Counter (Unik i Kontra)',
+        desc: 'Podstawowa kombinacja prostych z natychmiastowym zejściem z linii ciosu i ponowieniem prawym.',
+        videoId: 'YsFK1MMDQgk',
+        instructions: 'Wyprowadź kombinację Jab-Cross (1-2), zrób unik rotacyjny (slip) w prawo pod kontrującym prostym rywala i wystrzel prawym hakiem na dół.'
       },
       {
         id: 2,
-        title: 'Moc Eksplozywna & Gas Tank',
-        badge: 'MOTORYKA & SIŁA',
-        desc: 'Eksplozywne wyskoki z Trap Barem i interwały tlenowe.',
-        videoUrl: 'https://www.youtube.com/embed/7V81p9Q1uHw',
-        instructions: 'Wskoki z gryfem Trap Bar (30% CM) + 15 sekund maksymalnego sprintu na rowerze AirBike.'
+        category: 'GRAPPLING',
+        badge: 'ZAPASY MMA',
+        title: 'Wejścia w Obie Nogi (Double Leg Takedown)',
+        desc: 'Zejście pod ciosami, zapięcie dłoni za udami przeciwnika i dynamiczne wyniesienie.',
+        videoId: '4DHzLvLd-0Y',
+        instructions: 'Zainicjuj prawy sierp. Gdy rywal unosi gardę, obniż poziom bioder, wbij kolano między jego stopy i zepnij ręce mocno za jego udami z głową przy żebrach.'
+      },
+      {
+        id: 3,
+        category: 'GRAPPLING',
+        badge: 'KLINCZ & SIATKA',
+        title: 'Walka pod Klatką (MMA Wall Wrestling)',
+        desc: 'Dociskanie rywala do siatki, kontrola nadgarstków, walka o podchwyty (underhooks) i krótkie łokcie.',
+        videoId: 'C-q6NYWPAVk',
+        instructions: 'Zabezpiecz głowę pod brodą rywala na siatce, walcz o obustronny podchwyt (double underhooks) i kontroluj biodra, uniemożliwiając mu ucieczkę.'
+      },
+      {
+        id: 4,
+        category: 'GRAPPLING',
+        badge: 'BJJ NO-GI',
+        title: 'Gilotyna & D\'Arce Choke ze Sprawlu',
+        desc: 'Błyskawiczne duszenia po obronie przed wejściem przeciwnika w nogi.',
+        videoId: 'Ll9bbPpuERo',
+        instructions: 'Gdy rywal nurkuje w nogi, wyrzuć biodra mocno w tył (sprawl), zablokuj jego szyję pod pachą i zapnij mocny chwyt bicepsem.'
+      },
+      {
+        id: 5,
+        category: 'GRAPPLING',
+        badge: 'BJJ NO-GI',
+        title: 'Rear Naked Choke (Duszenie zza Pleców)',
+        desc: 'Kontrola pozycji pleców (Back Mount), zakładanie haków i precyzyjne dopięcie duszenia.',
+        videoId: '8bOGBjo3a08',
+        instructions: 'Zabezpiecz chwyt seatbelt, ułóż zgięcie łokcia bezpośrednio pod krtanią rywala, schowaj drugą dłoń za jego karkiem i dociśnij klatkę piersiową.'
+      },
+      {
+        id: 6,
+        category: 'STRIKING',
+        badge: 'K-1 & MUAY THAI',
+        title: 'Low Kick & Calf Kick (Kopnięcie na Łydkę)',
+        desc: 'Destrukcyjne kopnięcia piszczelem w nerw strzałkowy oraz udo rywala.',
+        videoId: '3M3iTCmKgAA',
+        instructions: 'Zmarkuj lewy prosty, by rywal dociążył przednią nogę. Pod kątem 45 stopni wbij twardy piszczel w zewnętrzną część łydki przeciwnika.'
+      },
+      {
+        id: 7,
+        category: 'MOTOR',
+        badge: 'SIŁA & WYTRZYMAŁOŚĆ',
+        title: 'Moc Eksplozywna Ciosu & Trap Bar Jumps',
+        desc: 'Budowanie potężnej siły bioder, szybkości ciosu oraz kondycji turniejowej.',
+        videoId: '8F854carMCE',
+        instructions: 'Wskoki z gryfem Trap Bar (30% CM) x 5 powtórzeń w 4 seriach + 4 serie dynamicznych rzutów piłką lekarską o ścianę z rotacji bioder.'
       }
     ];
 
-    // ================= 1. SYSTEM AUTORYZACJI (SUPABASE AUTH) =================
+    // ================= 1. SYSTEM AUTORYZACJI + 2FA =================
     async function checkAuthSession() {
       const { data: { session } } = await db.auth.getSession();
       if (session && session.user) {
@@ -485,51 +648,91 @@
 
     function switchAuthMode(mode) {
       const loginForm = document.getElementById('loginForm');
+      const twoFactorForm = document.getElementById('twoFactorForm');
       const registerForm = document.getElementById('registerForm');
       const tabLogin = document.getElementById('authTabLogin');
       const tabRegister = document.getElementById('authTabRegister');
       document.getElementById('authErrorMsg').classList.add('hidden');
 
+      twoFactorForm.classList.add('hidden');
+
       if (mode === 'login') {
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
-        tabLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-app-red text-white";
+        tabLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-app-border text-white shadow-sm";
         tabRegister.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all text-app-muted";
       } else {
         loginForm.classList.add('hidden');
         registerForm.classList.remove('hidden');
-        tabRegister.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-emerald-600 text-white";
+        tabRegister.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all bg-app-border text-white shadow-sm";
         tabLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all text-app-muted";
       }
     }
 
-    // Logowanie
-    async function handleLogin(e) {
+    // Krok 1: Logowanie hasłem
+    async function handleLoginStep1(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
       const errorEl = document.getElementById('authErrorMsg');
+      const formEl = document.getElementById('loginForm');
       errorEl.classList.add('hidden');
 
       const btn = document.getElementById('loginSubmitBtn');
-      btn.innerText = "Logowanie...";
+      btn.innerText = "Sprawdzanie danych...";
       btn.disabled = true;
 
       const { data, error } = await db.auth.signInWithPassword({ email, password });
-      btn.innerText = "Zaloguj się";
+      btn.innerText = "Dalej: Weryfikacja 2FA →";
       btn.disabled = false;
 
       if (error) {
         errorEl.innerText = "Błąd: " + error.message;
         errorEl.classList.remove('hidden');
+        formEl.classList.add('animate-shake');
+        setTimeout(() => formEl.classList.remove('animate-shake'), 400);
         return;
       }
 
-      await loadCurrentUserData(data.user.id);
+      pendingAuthUserId = data.user.id;
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('twoFactorForm').classList.remove('hidden');
+      document.getElementById('twoFactorPinInput').value = '';
+      document.getElementById('twoFactorPinInput').focus();
+    }
+
+    // Krok 2: Weryfikacja PINu 2FA
+    async function handleLoginStep2(e) {
+      e.preventDefault();
+      const pin = document.getElementById('twoFactorPinInput').value.trim();
+      const errorEl = document.getElementById('authErrorMsg');
+      const formEl = document.getElementById('twoFactorForm');
+      errorEl.classList.add('hidden');
+
+      const { data: profileData } = await db.from('profiles').select('*').eq('id', pendingAuthUserId).single();
+
+      if (profileData && profileData.security_pin) {
+        if (profileData.security_pin !== pin) {
+          errorEl.innerText = "Nieprawidłowy 6-cyfrowy kod PIN 2FA!";
+          errorEl.classList.remove('hidden');
+          formEl.classList.add('animate-shake');
+          setTimeout(() => formEl.classList.remove('animate-shake'), 400);
+          return;
+        }
+      }
+
+      currentUserProfile = profileData;
+      updateProfileUI();
       showApp();
     }
 
-    // Rejestracja nowego zawodnika
+    function cancel2FA() {
+      pendingAuthUserId = null;
+      document.getElementById('twoFactorForm').classList.add('hidden');
+      document.getElementById('loginForm').classList.remove('hidden');
+    }
+
+    // Rejestracja
     async function handleRegister(e) {
       e.preventDefault();
       const fullName = document.getElementById('regFullName').value.trim();
@@ -540,28 +743,30 @@
       const targetWeight = parseFloat(document.getElementById('regTargetWeight').value) || 77.0;
       const email = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPassword').value;
+      const securityPin = document.getElementById('regSecurityPin').value.trim();
 
       const errorEl = document.getElementById('authErrorMsg');
+      const formEl = document.getElementById('registerForm');
       errorEl.classList.add('hidden');
 
       const btn = document.getElementById('regSubmitBtn');
-      btn.innerText = "Tworzenie konta...";
+      btn.innerText = "Tworzenie konta z 2FA...";
       btn.disabled = true;
 
-      // 1. Rejestracja w Supabase Auth
       const { data: authData, error: authError } = await db.auth.signUp({ email, password });
 
       if (authError) {
-        btn.innerText = "Zarejestruj Konto Zawodnika";
+        btn.innerText = "Zarejestruj Konto z 2FA";
         btn.disabled = false;
         errorEl.innerText = "Błąd rejestracji: " + authError.message;
         errorEl.classList.remove('hidden');
+        formEl.classList.add('animate-shake');
+        setTimeout(() => formEl.classList.remove('animate-shake'), 400);
         return;
       }
 
       if (authData.user) {
-        // 2. Utworzenie rekordu w tabeli profiles
-        const { error: profileError } = await db.from('profiles').insert([{
+        await db.from('profiles').insert([{
           id: authData.user.id,
           full_name: fullName,
           club: club,
@@ -570,18 +775,15 @@
           current_weight: currentWeight,
           target_weight: targetWeight,
           record: '0-0-0',
-          medals: 'Brak'
+          medals: 'Brak',
+          security_pin: securityPin
         }]);
-
-        if (profileError) {
-          console.error("Błąd tworzenia profilu:", profileError);
-        }
 
         await loadCurrentUserData(authData.user.id);
         showApp();
       }
 
-      btn.innerText = "Zarejestruj Konto Zawodnika";
+      btn.innerText = "Zarejestruj Konto z 2FA";
       btn.disabled = false;
     }
 
@@ -594,7 +796,7 @@
     function showApp() {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
-      renderTrainingCards();
+      renderTrainingCards('ALL');
       loadFightersFromSupabase();
       loadPostsFromSupabase();
     }
@@ -602,11 +804,12 @@
     function showAuth() {
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('mainApp').classList.add('hidden');
+      switchAuthMode('login');
     }
 
-    // ================= 2. ŁADOWANIE DANYCH PROFILU =================
+    // ================= 2. PROFIL I ZDJĘCIE AWATARA =================
     async function loadCurrentUserData(userId) {
-      const { data, error } = await db.from('profiles').select('*').eq('id', userId).single();
+      const { data } = await db.from('profiles').select('*').eq('id', userId).single();
       if (data) {
         currentUserProfile = data;
         updateProfileUI();
@@ -617,9 +820,27 @@
       if (!currentUserProfile) return;
 
       const initials = currentUserProfile.full_name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-      document.getElementById('topAvatarInitials').innerText = initials;
-      document.getElementById('topWeightLabel').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
+      
+      // Obsługa zdjęcia awatara
+      if (currentUserProfile.avatar_url && currentUserProfile.avatar_url.startsWith('data:image')) {
+        document.getElementById('topAvatarImg').src = currentUserProfile.avatar_url;
+        document.getElementById('topAvatarImg').classList.remove('hidden');
+        document.getElementById('topAvatarInitials').classList.add('hidden');
+        
+        document.getElementById('profAvatarImg').src = currentUserProfile.avatar_url;
+        document.getElementById('profAvatarImg').classList.remove('hidden');
+        document.getElementById('profAvatarInitials').classList.add('hidden');
+      } else {
+        document.getElementById('topAvatarInitials').innerText = initials;
+        document.getElementById('topAvatarInitials').classList.remove('hidden');
+        document.getElementById('topAvatarImg').classList.add('hidden');
 
+        document.getElementById('profAvatarInitials').innerText = initials;
+        document.getElementById('profAvatarInitials').classList.remove('hidden');
+        document.getElementById('profAvatarImg').classList.add('hidden');
+      }
+
+      document.getElementById('topWeightLabel').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
       document.getElementById('homeFighterName').innerText = currentUserProfile.full_name;
       document.getElementById('homeFighterClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${currentUserProfile.club} (${currentUserProfile.city})`;
       document.getElementById('homeCurWeight').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
@@ -637,7 +858,22 @@
       lucide.createIcons();
     }
 
-    // ================= 3. BAZA ZAWODNIKÓW (LIVE Z SUPABASE) =================
+    async function handleAvatarFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file || !currentUserProfile) return;
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const base64 = evt.target.result;
+        currentUserProfile.avatar_url = base64;
+        updateProfileUI();
+
+        await db.from('profiles').update({ avatar_url: base64 }).eq('id', currentUserProfile.id);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ================= 3. BAZA ZAWODNIKÓW (SUPABASE) =================
     async function loadFightersFromSupabase() {
       const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
       if (!error && data) {
@@ -652,30 +888,37 @@
         container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak zarejestrowanych zawodników.</div>`;
         return;
       }
-      container.innerHTML = list.map(f => `
-        <div class="bg-app-card border border-app-border rounded-xl p-3 flex items-center justify-between gap-3 card-shadow">
+      container.innerHTML = list.map(f => {
+        const initials = f.full_name ? f.full_name.substring(0,2).toUpperCase() : 'PL';
+        const hasAvatar = f.avatar_url && f.avatar_url.startsWith('data:image');
+
+        return `
+        <div class="bg-app-card border border-app-border rounded-xl p-3 flex items-center justify-between gap-3 card-shadow interactive-card">
           <div class="flex items-center gap-3">
-            <img src="${f.avatar_url || 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=100'}" class="w-11 h-11 rounded-xl object-cover border border-app-border" />
+            <div class="w-11 h-11 rounded-xl overflow-hidden bg-black/60 border border-app-border flex items-center justify-center font-title font-bold text-xs text-app-red">
+              ${hasAvatar ? `<img src="${f.avatar_url}" class="w-full h-full object-cover" />` : initials}
+            </div>
             <div>
               <div class="flex items-center gap-1.5">
                 <span class="text-xs font-bold text-white">${f.full_name}</span>
-                <span class="text-[9px] font-bold bg-sky-950/80 text-sky-400 px-1.5 py-0.2 rounded">${f.weight_category}</span>
+                <span class="text-[9px] font-bold bg-black/50 text-sky-400 border border-app-border px-1.5 py-0.2 rounded">${f.weight_category}</span>
               </div>
               <p class="text-[10px] text-app-muted">${f.club} • ${f.city}</p>
               <span class="text-[10px] text-emerald-400 font-semibold">Bilans: ${f.record}</span>
             </div>
           </div>
-          <button onclick="alert('Zaproszenie na sparing wysłane do zawodnika: ${f.full_name}')" class="px-2.5 py-1.5 bg-app-border text-gray-200 text-[10px] font-bold rounded-lg active:scale-95">
+          <button onclick="alert('Zaproszenie na sparing wysłane do: ${f.full_name}')" class="px-2.5 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight text-gray-200 text-[10px] font-bold rounded-lg active:scale-95">
             Sparing 🥊
           </button>
         </div>
-      `).join('');
+        `;
+      }).join('');
       lucide.createIcons();
     }
 
     function filterFightersLive() {
       const q = document.getElementById('fighterSearchInput').value.toLowerCase();
-      const filtered = liveFightersList.filter(f => f.full_name.toLowerCase().includes(q) || f.club.toLowerCase().includes(q) || f.city.toLowerCase().includes(q));
+      const filtered = liveFightersList.filter(f => f.full_name.toLowerCase().includes(q) || f.club.toLowerCase().includes(q));
       renderFighters(filtered);
     }
 
@@ -694,9 +937,9 @@
         return;
       }
       container.innerHTML = posts.map(p => `
-        <div class="bg-app-card border border-app-border rounded-2xl overflow-hidden card-shadow">
+        <div class="bg-app-card border border-app-border rounded-2xl overflow-hidden card-shadow interactive-card">
           <div class="p-3 flex items-center gap-2.5 border-b border-app-border/60">
-            <div class="w-7 h-7 rounded-lg bg-slate-800 text-app-red font-bold flex items-center justify-center text-xs">
+            <div class="w-7 h-7 rounded-lg bg-black/60 border border-app-border text-app-red font-bold flex items-center justify-center text-xs">
               ${p.author_name ? p.author_name.substring(0,2).toUpperCase() : 'PL'}
             </div>
             <div>
@@ -746,12 +989,16 @@
       }
     }
 
-    // ================= 5. TRENINGI & WIDEO =================
+    // ================= 5. INTERAKTYWNY TRENING I WIDEO =================
     let activeWorkout = null;
     function startInteractiveWorkout(id) {
       activeWorkout = workoutPrograms[id];
       document.getElementById('playerWorkoutTitle').innerText = activeWorkout.title;
-      document.getElementById('playerVideoIframe').src = activeWorkout.videoUrl;
+      
+      const embedUrl = `https://www.youtube.com/embed/${activeWorkout.videoId}?rel=0&modestbranding=1`;
+      document.getElementById('playerVideoIframe').src = embedUrl;
+      document.getElementById('playerDirectYoutubeLink').href = `https://www.youtube.com/watch?v=${activeWorkout.videoId}`;
+
       document.getElementById('playerDrillTitle').innerText = activeWorkout.title;
       document.getElementById('playerDrillInstructions').innerText = activeWorkout.instructions;
       toggleModal('workoutPlayerModal', true);
@@ -770,18 +1017,29 @@
       toggleModal('workoutPlayerModal', false);
     }
 
-    function renderTrainingCards() {
+    function renderTrainingCards(category = 'ALL') {
       const c = document.getElementById('trainingCardsContainer');
-      c.innerHTML = workoutPrograms.map(w => `
-        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2">
-          <span class="text-[10px] font-bold text-rose-400 bg-rose-950/60 px-2 py-0.5 rounded">${w.badge}</span>
+      const list = category === 'ALL' ? workoutPrograms : workoutPrograms.filter(w => w.category === category);
+
+      c.innerHTML = list.map(w => `
+        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2 interactive-card">
+          <span class="text-[10px] font-bold text-app-muted bg-black/40 border border-app-border px-2 py-0.5 rounded">${w.badge}</span>
           <h3 class="font-title text-sm font-bold text-white uppercase">${w.title}</h3>
-          <p class="text-xs text-app-muted">${w.desc}</p>
-          <button onclick="startInteractiveWorkout(${w.id})" class="w-full mt-2 py-2 bg-app-red hover:bg-app-redDark text-white font-bold text-xs uppercase rounded-xl transition-all shadow">
-            Rozpocznij z Wideo ▶
+          <p class="text-xs text-app-muted leading-relaxed">${w.desc}</p>
+          <button onclick="startInteractiveWorkout(${w.id})" class="w-full mt-2 py-2 bg-app-card border border-app-border hover:border-app-borderLight text-white font-bold text-xs uppercase rounded-xl transition-all shadow flex items-center justify-center gap-1.5 active:scale-95">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current text-app-red"></i> Rozpocznij z Wideo
           </button>
         </div>
       `).join('');
+      lucide.createIcons();
+    }
+
+    function filterTrainingList(cat) {
+      document.querySelectorAll('.t-filter-btn').forEach(b => {
+        b.className = 't-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap transition-all';
+      });
+      document.getElementById(`tf-${cat.toLowerCase()}`).className = 't-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-border text-white whitespace-nowrap transition-all shadow-sm';
+      renderTrainingCards(cat);
     }
 
     // ================= 6. ZAPIS WAGI =================
@@ -802,30 +1060,39 @@
       }
     }
 
-    // ================= 7. NAWIGACJA TABS =================
+    // ================= 7. NAWIGACJA Z PŁYNNYMI PRZEJŚCIAMI =================
     function switchTab(t) {
       ['home', 'training', 'progress', 'fighters', 'profile'].forEach(tab => {
-        document.getElementById(`tab-${tab}`).classList.add('hidden');
-        document.getElementById(`tab-${tab}`).classList.remove('block');
+        const el = document.getElementById(`tab-${tab}`);
+        el.classList.add('hidden');
+        el.classList.remove('block', 'tab-animate');
         document.getElementById(`nav-btn-${tab}`).classList.replace('text-app-red', 'text-app-muted');
       });
-      document.getElementById(`tab-${t}`).classList.remove('hidden');
-      document.getElementById(`tab-${t}`).classList.add('block');
+
+      const activeTabEl = document.getElementById(`tab-${t}`);
+      activeTabEl.classList.remove('hidden');
+      activeTabEl.classList.add('block', 'tab-animate');
       document.getElementById(`nav-btn-${t}`).classList.replace('text-app-muted', 'text-app-red');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function toggleModal(id, open) {
       const el = document.getElementById(id);
-      el.classList.toggle('hidden', !open);
-      el.classList.toggle('flex', open);
+      if (open) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      } else {
+        el.classList.remove('flex');
+        el.classList.add('hidden');
+      }
     }
+
     function closeModal(id) {
       if(id === 'workoutPlayerModal') document.getElementById('playerVideoIframe').src = "";
       toggleModal(id, false);
     }
 
-    // Sprawdzenie sesji przy starcie aplikacji
+    // Sprawdzenie sesji przy starcie
     checkAuthSession();
   </script>
 </body>
