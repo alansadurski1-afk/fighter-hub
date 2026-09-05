@@ -103,7 +103,6 @@
       animation: shakeError 0.35s ease-in-out;
     }
 
-    /* Płynne kliknięcia i interakcje */
     button, .interactive-card {
       transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
     }
@@ -115,7 +114,7 @@
 
 <body class="text-gray-200 antialiased min-h-screen flex flex-col justify-between selection:bg-app-red selection:text-white">
 
-  <!-- ================= EKRAN AUTORYZACJI (LOGOWANIE / 2FA / REJESTRACJA) ================= -->
+  <!-- ================= EKRAN AUTORYZACJI ================= -->
   <div id="authScreen" class="fixed inset-0 z-50 bg-app-bg flex flex-col justify-center items-center px-4 overflow-y-auto py-8">
     <div class="max-w-sm w-full space-y-5">
       
@@ -194,10 +193,10 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[10px] font-bold text-gray-300 mb-1">Kategoria</label>
-            <select id="regWeightCat" class="w-full bg-black/50 border border-app-border rounded-xl px-1.5 py-2 text-[11px] text-white transition-all">
+            <select id="regWeightCat" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white transition-all">
               <option value="-61kg">-61 kg</option>
               <option value="-66kg">-66 kg</option>
               <option value="-70kg">-70 kg</option>
@@ -207,6 +206,20 @@
               <option value="+93kg">+93 kg</option>
             </select>
           </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-300 mb-1">Styl Walki</label>
+            <select id="regFightingStyle" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white transition-all">
+              <option value="MMA / All-rounder" selected>MMA / Wszechstronny</option>
+              <option value="Striker / K-1">Striker / Stójka</option>
+              <option value="Zapasy / Wrestler">Zapasy / Wrestling</option>
+              <option value="BJJ / Grappler">BJJ / Parter</option>
+              <option value="Boks">Boks</option>
+              <option value="Muay Thai">Muay Thai</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[10px] font-bold text-gray-300 mb-1">Waga dziś (kg)</label>
             <input type="number" step="0.1" id="regCurrentWeight" required placeholder="79.5" class="w-full bg-black/50 border border-app-border rounded-xl px-2 py-2 text-xs text-white transition-all" />
@@ -232,7 +245,7 @@
             <i data-lucide="lock" class="w-3 h-3"></i> Ustaw 6-cyfrowy PIN 2FA
           </label>
           <input type="password" id="regSecurityPin" maxlength="6" pattern="[0-9]{6}" required placeholder="np. 123456" class="w-full bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono tracking-widest transition-all" />
-          <span class="text-[9px] text-app-muted mt-1 block">Kod wymagany przy każdym logowaniu do konta.</span>
+          <span class="text-[9px] text-app-muted mt-1 block">Kod wymagany przy każdym logowaniu.</span>
         </div>
 
         <button type="submit" id="regSubmitBtn" class="w-full py-3 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all shadow active:scale-95">
@@ -261,13 +274,21 @@
         </div>
       </div>
 
-      <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-app-card border border-app-border hover:border-app-borderLight px-2.5 py-1 rounded-xl active:scale-95 transition-all">
-        <div class="w-6 h-6 rounded-md bg-app-border overflow-hidden flex items-center justify-center text-[10px] font-black text-app-red">
-          <img id="topAvatarImg" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=100" class="w-full h-full object-cover hidden transition-opacity duration-300" />
-          <span id="topAvatarInitials">--</span>
-        </div>
-        <span class="text-xs font-bold text-gray-300" id="topWeightLabel">-- kg</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- PRZYCISK POWIADOMIEŃ -->
+        <button onclick="openNotificationsModal()" class="relative p-2 bg-app-card border border-app-border hover:border-app-borderLight rounded-xl text-gray-300 hover:text-white active:scale-95 transition-all">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span id="notifBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-app-red text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span>
+        </button>
+
+        <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-app-card border border-app-border hover:border-app-borderLight px-2.5 py-1 rounded-xl active:scale-95 transition-all">
+          <div class="w-6 h-6 rounded-md bg-app-border overflow-hidden flex items-center justify-center text-[10px] font-black text-app-red">
+            <img id="topAvatarImg" src="" class="w-full h-full object-cover hidden transition-opacity duration-300" />
+            <span id="topAvatarInitials">--</span>
+          </div>
+          <span class="text-xs font-bold text-gray-300" id="topWeightLabel">-- kg</span>
+        </button>
+      </div>
     </header>
 
     <!-- GŁÓWNY KONTENER -->
@@ -283,29 +304,28 @@
               <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> --
             </p>
           </div>
-          <span class="text-[10px] font-bold bg-app-card border border-app-border text-emerald-400 px-2.5 py-1 rounded-lg">
-            CAMP ACTIVE
-          </span>
+          <div class="text-right">
+            <span class="text-[10px] font-bold bg-app-card border border-app-border text-emerald-400 px-2.5 py-1 rounded-lg block">
+              CAMP ACTIVE
+            </span>
+            <span class="text-[10px] font-semibold text-sky-400 mt-1 block" id="homeFighterStyleBadge">--</span>
+          </div>
         </div>
 
-        <!-- Karta Wagi i Turnieju -->
+        <!-- Karta Wagi -->
         <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3 interactive-card">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider flex items-center gap-1">
-                <i data-lucide="trophy" class="w-3.5 h-3.5"></i> Nadchodzący Start
-              </span>
-              <h3 class="font-title text-base font-bold text-white uppercase">Mistrzostwa Polski MMA</h3>
-              <p class="text-xs text-app-muted">Warszawa • Arena Ursynów</p>
-            </div>
-            <span class="text-xs font-bold text-white bg-black/40 px-2 py-1 rounded-lg border border-app-border">
-              Za 14 dni
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="scale" class="w-3.5 h-3.5"></i> Kontrola Wagi Startowej
             </span>
+            <button onclick="openWeightUpdateModal()" class="text-[10px] text-sky-400 hover:underline font-bold">
+              Zaktualizuj
+            </button>
           </div>
 
           <div class="bg-black/40 border border-app-border rounded-xl p-3">
             <div class="flex justify-between text-xs mb-1.5 font-bold">
-              <span class="text-app-muted">Waga: <b class="text-white" id="homeCurWeight">-- kg</b></span>
+              <span class="text-app-muted">Aktualna: <b class="text-white" id="homeCurWeight">-- kg</b></span>
               <span class="text-amber-500" id="homeWeightDiff">Limit: -- kg</span>
             </div>
             <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
@@ -314,19 +334,21 @@
           </div>
         </div>
 
-        <!-- Skrót do dzisiejszego treningu -->
+        <!-- Zmieniający się losowo Polecany Trening Dnia -->
         <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2.5 interactive-card">
           <div class="flex justify-between items-center">
-            <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Polecany Trening Dnia</span>
-            <span class="text-[10px] text-emerald-400 font-bold bg-black/40 border border-app-border px-2 py-0.5 rounded">Z Wideo</span>
+            <span class="text-[10px] font-bold text-app-red uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="flame" class="w-3.5 h-3.5 text-app-red"></i> Polecany Trening Dnia (Losowy)
+            </span>
+            <span id="homeWorkoutBadge" class="text-[10px] text-emerald-400 font-bold bg-black/40 border border-app-border px-2 py-0.5 rounded">BOKS</span>
           </div>
-          <h3 class="font-title text-sm font-bold text-white uppercase">
-            Jab Mastery: Przełamywanie Obrony & Pivot
+          <h3 class="font-title text-sm font-bold text-white uppercase" id="homeWorkoutTitle">
+            --
           </h3>
-          <p class="text-xs text-app-muted leading-relaxed">
-            Instruktaż wideo Tony'ego Jeffriesa: praca lewym prostym, zmiana tempa i kąta natarcia.
+          <p class="text-xs text-app-muted leading-relaxed" id="homeWorkoutDesc">
+            --
           </p>
-          <button onclick="startInteractiveWorkout(0)" class="w-full py-2.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
+          <button id="homeWorkoutActionBtn" onclick="" class="w-full py-2.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
             <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Rozpocznij Trening z Wideo
           </button>
         </div>
@@ -345,18 +367,18 @@
             <div class="p-2.5 rounded-lg bg-black/40 text-amber-500 border border-app-border"><i data-lucide="users" class="w-4 h-4"></i></div>
             <div>
               <div class="text-xs font-bold text-white">Zawodnicy</div>
-              <div class="text-[10px] text-app-muted">Baza Fighterów PL</div>
+              <div class="text-[10px] text-app-muted">Sparingi & Czat</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ================= 2. TAB TRENING (8 PROGRAMÓW Z WIDEO) ================= -->
+      <!-- ================= 2. TAB TRENING ================= -->
       <div id="tab-training" class="space-y-4 hidden tab-animate">
         <div class="pt-1">
           <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Katalog Szkoleniowy</span>
           <h2 class="font-title text-xl font-extrabold uppercase text-white">Baza Treningów MMA z Wideo</h2>
-          <p class="text-xs text-app-muted">Wybierz sesję – aplikacja przeprowadzi Cię przez ćwiczenia z wideo.</p>
+          <p class="text-xs text-app-muted">Wybierz sesję – instruktaże z ćwiczeniami.</p>
         </div>
 
         <!-- Filtry dyscyplin -->
@@ -367,9 +389,7 @@
           <button onclick="filterTrainingList('MOTOR')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-motor">⚡ Motoryka & Siła</button>
         </div>
 
-        <div class="space-y-3" id="trainingCardsContainer">
-          <!-- Renderowane z JS -->
-        </div>
+        <div class="space-y-3" id="trainingCardsContainer"></div>
       </div>
 
       <!-- ================= 3. TAB PROGRES ================= -->
@@ -386,7 +406,7 @@
 
         <div class="grid grid-cols-2 gap-2.5">
           <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center interactive-card">
-            <span class="text-[10px] font-bold text-app-muted uppercase block">Sparingi</span>
+            <span class="text-[10px] font-bold text-app-muted uppercase block">Zaakceptowane Sparingi</span>
             <span class="font-title text-2xl font-black text-white" id="progSparrings">0</span>
           </div>
           <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center interactive-card">
@@ -396,12 +416,12 @@
         </div>
       </div>
 
-      <!-- ================= 4. TAB ZAWODNICY (Z BAZY SUPABASE) ================= -->
+      <!-- ================= 4. TAB ZAWODNICY ================= -->
       <div id="tab-fighters" class="space-y-3.5 hidden tab-animate">
         <div class="pt-1">
           <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Zarejestrowani Zawodnicy</span>
           <h2 class="font-title text-xl font-extrabold uppercase text-white">Fighterzy w Polsce</h2>
-          <p class="text-xs text-app-muted">Prawdziwi zawodnicy zarejestrowani w bazie danych.</p>
+          <p class="text-xs text-app-muted">Prawdziwi zawodnicy – umawiaj sparingi i pisz bezpośrednio.</p>
         </div>
 
         <div class="relative">
@@ -410,7 +430,7 @@
             type="text" 
             id="fighterSearchInput" 
             oninput="filterFightersLive()" 
-            placeholder="Szukaj po nazwisku, klubie lub mieście..." 
+            placeholder="Szukaj po nazwisku, stylu, klubie..." 
             class="w-full bg-app-card border border-app-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-borderLight transition-colors"
           />
         </div>
@@ -420,13 +440,13 @@
         </div>
       </div>
 
-      <!-- ================= 5. TAB PROFIL & POSTY & ZDJĘCIE PROFILOWE ================= -->
+      <!-- ================= 5. TAB PROFIL & POSTY & STYL WALKI ================= -->
       <div id="tab-profile" class="space-y-4 hidden tab-animate">
         <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
           <div class="flex items-center gap-3.5">
             <div class="relative group cursor-pointer" onclick="document.getElementById('avatarFileInput').click()">
               <div class="w-16 h-16 rounded-2xl bg-black/60 border border-app-border overflow-hidden flex items-center justify-center transition-transform active:scale-95">
-                <img id="profAvatarImg" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=200" class="w-full h-full object-cover hidden transition-opacity duration-300" />
+                <img id="profAvatarImg" src="" class="w-full h-full object-cover hidden transition-opacity duration-300" />
                 <span id="profAvatarInitials" class="font-title text-lg font-bold text-app-red">--</span>
               </div>
               <div class="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-bold transition-opacity">
@@ -435,15 +455,31 @@
             </div>
             <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelect(event)" />
 
-            <div class="space-y-0.5">
+            <div class="space-y-0.5 flex-1">
               <h2 class="font-title text-base font-black text-white uppercase" id="profName">--</h2>
               <div class="text-xs text-app-muted flex items-center gap-1 font-semibold" id="profClub">
                 <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> --
+              </div>
+              <div class="text-[11px] text-amber-400 font-bold flex items-center gap-1" id="profStyle">
+                <i data-lucide="crosshair" class="w-3 h-3"></i> Styl: MMA
               </div>
               <div class="text-[11px] text-sky-400 font-bold" id="profDivision">
                 --
               </div>
             </div>
+          </div>
+
+          <!-- Zmiana Stylu Walki -->
+          <div class="bg-black/30 p-2.5 rounded-xl border border-app-border flex items-center justify-between">
+            <label class="text-[11px] font-bold text-gray-300">Zmień swój styl walki:</label>
+            <select id="profileStyleSelect" onchange="updateFightingStyle(this.value)" class="bg-app-card border border-app-border rounded-lg px-2 py-1 text-xs text-white">
+              <option value="MMA / All-rounder">MMA / Wszechstronny</option>
+              <option value="Striker / K-1">Striker / Stójka</option>
+              <option value="Zapasy / Wrestler">Zapasy / Wrestling</option>
+              <option value="BJJ / Grappler">BJJ / Parter</option>
+              <option value="Boks">Boks</option>
+              <option value="Muay Thai">Muay Thai</option>
+            </select>
           </div>
 
           <div class="pt-1 flex gap-2">
@@ -502,6 +538,52 @@
     </nav>
   </div>
 
+  <!-- ================= MODAL: POWIADOMIENIA O SPARINGACH ================= -->
+  <div id="notificationsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 transition-opacity duration-200">
+    <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full p-4 relative max-h-[85vh] flex flex-col modal-pop">
+      <div class="flex justify-between items-center border-b border-app-border pb-2.5 mb-3">
+        <h3 class="font-title text-sm font-bold text-white uppercase flex items-center gap-2">
+          <i data-lucide="bell" class="w-4 h-4 text-app-red"></i> Propozycje Sparingów
+        </h3>
+        <button onclick="toggleModal('notificationsModal', false)" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="notificationsList" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+        <!-- Renderowane powiadomienia -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: CZAT Z ZAWODNIKIEM ================= -->
+  <div id="chatModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3 transition-opacity duration-200">
+    <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full h-[80vh] flex flex-col relative modal-pop">
+      <div class="flex justify-between items-center p-3.5 border-b border-app-border">
+        <div class="flex items-center gap-2">
+          <div id="chatRecipientAvatar" class="w-8 h-8 rounded-lg bg-black/60 border border-app-border flex items-center justify-center text-app-red font-bold text-xs">--</div>
+          <div>
+            <h4 class="text-xs font-bold text-white uppercase" id="chatRecipientName">Czat</h4>
+            <span class="text-[10px] text-emerald-400 font-semibold" id="chatRecipientClub">Online</span>
+          </div>
+        </div>
+        <button onclick="toggleModal('chatModal', false)" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="chatMessagesContainer" class="flex-1 overflow-y-auto p-3.5 space-y-2.5">
+        <!-- Wiadomości -->
+      </div>
+
+      <form onsubmit="handleSendChatMessage(event)" class="p-3 border-t border-app-border flex gap-2">
+        <input type="text" id="chatInputMessage" required placeholder="Napisz wiadomość..." class="flex-1 bg-black/50 border border-app-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-app-borderLight" />
+        <button type="submit" class="px-3.5 py-2 bg-app-red hover:bg-app-redDark text-white rounded-xl active:scale-95">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= MODAL: PLAYER TRENINGOWY ================= -->
   <div id="workoutPlayerModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3 transition-opacity duration-200">
     <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full p-4 relative max-h-[95vh] overflow-y-auto flex flex-col justify-between modal-pop">
@@ -558,8 +640,10 @@
     let pendingAuthUserId = null;
     let liveFightersList = [];
     let selectedImageBase64 = null;
+    let activeChatRecipient = null;
+    let incomingSparingRequests = [];
 
-    // ================= 8 PEŁNYCH PROGRAMÓW TRENINGOWYCH Z DZIAŁAJĄCYM WIDEO =================
+    // ================= 8 PEŁNYCH PROGRAMÓW TRENINGOWYCH =================
     const workoutPrograms = [
       {
         id: 0,
@@ -635,6 +719,17 @@
       }
     ];
 
+    // ================= LOSOWY TRENING DNIA =================
+    function randomizeDailyWorkout() {
+      const randomIndex = Math.floor(Math.random() * workoutPrograms.length);
+      const workout = workoutPrograms[randomIndex];
+
+      document.getElementById('homeWorkoutTitle').innerText = workout.title;
+      document.getElementById('homeWorkoutDesc').innerText = workout.desc;
+      document.getElementById('homeWorkoutBadge').innerText = workout.badge;
+      document.getElementById('homeWorkoutActionBtn').setAttribute('onclick', `startInteractiveWorkout(${workout.id})`);
+    }
+
     // ================= 1. SYSTEM AUTORYZACJI + 2FA =================
     async function checkAuthSession() {
       const { data: { session } } = await db.auth.getSession();
@@ -669,7 +764,6 @@
       }
     }
 
-    // Krok 1: Logowanie hasłem
     async function handleLoginStep1(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -701,7 +795,6 @@
       document.getElementById('twoFactorPinInput').focus();
     }
 
-    // Krok 2: Weryfikacja PINu 2FA
     async function handleLoginStep2(e) {
       e.preventDefault();
       const pin = document.getElementById('twoFactorPinInput').value.trim();
@@ -732,13 +825,13 @@
       document.getElementById('loginForm').classList.remove('hidden');
     }
 
-    // Rejestracja
     async function handleRegister(e) {
       e.preventDefault();
       const fullName = document.getElementById('regFullName').value.trim();
       const club = document.getElementById('regClub').value.trim();
       const city = document.getElementById('regCity').value.trim();
       const weightCategory = document.getElementById('regWeightCat').value;
+      const fightingStyle = document.getElementById('regFightingStyle').value;
       const currentWeight = parseFloat(document.getElementById('regCurrentWeight').value) || 77.0;
       const targetWeight = parseFloat(document.getElementById('regTargetWeight').value) || 77.0;
       const email = document.getElementById('regEmail').value.trim();
@@ -772,10 +865,13 @@
           club: club,
           city: city,
           weight_category: weightCategory,
+          fighting_style: fightingStyle,
           current_weight: currentWeight,
           target_weight: targetWeight,
           record: '0-0-0',
           medals: 'Brak',
+          sparrings_count: 0,
+          workouts_count: 0,
           security_pin: securityPin
         }]);
 
@@ -796,9 +892,11 @@
     function showApp() {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
+      randomizeDailyWorkout();
       renderTrainingCards('ALL');
       loadFightersFromSupabase();
       loadPostsFromSupabase();
+      loadSparingRequests();
     }
 
     function showAuth() {
@@ -807,11 +905,14 @@
       switchAuthMode('login');
     }
 
-    // ================= 2. PROFIL I ZDJĘCIE AWATARA =================
+    // ================= 2. PROFIL, AWATAR & STYL WALKI =================
     async function loadCurrentUserData(userId) {
       const { data } = await db.from('profiles').select('*').eq('id', userId).single();
       if (data) {
         currentUserProfile = data;
+        if (!currentUserProfile.fighting_style) {
+          currentUserProfile.fighting_style = 'MMA / All-rounder';
+        }
         updateProfileUI();
       }
     }
@@ -819,9 +920,8 @@
     function updateProfileUI() {
       if (!currentUserProfile) return;
 
-      const initials = currentUserProfile.full_name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+      const initials = currentUserProfile.full_name ? currentUserProfile.full_name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'PL';
       
-      // Obsługa zdjęcia awatara
       if (currentUserProfile.avatar_url && currentUserProfile.avatar_url.startsWith('data:image')) {
         document.getElementById('topAvatarImg').src = currentUserProfile.avatar_url;
         document.getElementById('topAvatarImg').classList.remove('hidden');
@@ -843,6 +943,7 @@
       document.getElementById('topWeightLabel').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
       document.getElementById('homeFighterName').innerText = currentUserProfile.full_name;
       document.getElementById('homeFighterClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${currentUserProfile.club} (${currentUserProfile.city})`;
+      document.getElementById('homeFighterStyleBadge').innerText = currentUserProfile.fighting_style || 'MMA';
       document.getElementById('homeCurWeight').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
 
       const diff = (currentUserProfile.current_weight - currentUserProfile.target_weight).toFixed(1);
@@ -853,9 +954,26 @@
 
       document.getElementById('profName').innerText = currentUserProfile.full_name;
       document.getElementById('profClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${currentUserProfile.club}`;
+      document.getElementById('profStyle').innerHTML = `<i data-lucide="crosshair" class="w-3 h-3 text-amber-400"></i> Styl: ${currentUserProfile.fighting_style || 'MMA'}`;
       document.getElementById('profDivision').innerText = `Kat. ${currentUserProfile.weight_category} • Bilans: ${currentUserProfile.record}`;
+      
+      const styleSelect = document.getElementById('profileStyleSelect');
+      if (styleSelect && currentUserProfile.fighting_style) {
+        styleSelect.value = currentUserProfile.fighting_style;
+      }
 
       lucide.createIcons();
+    }
+
+    async function updateFightingStyle(newStyle) {
+      if (!currentUserProfile) return;
+      currentUserProfile.fighting_style = newStyle;
+      updateProfileUI();
+      try {
+        await db.from('profiles').update({ fighting_style: newStyle }).eq('id', currentUserProfile.id);
+      } catch (err) {
+        console.log("Supabase style sync", err);
+      }
     }
 
     async function handleAvatarFileSelect(e) {
@@ -867,13 +985,230 @@
         const base64 = evt.target.result;
         currentUserProfile.avatar_url = base64;
         updateProfileUI();
-
         await db.from('profiles').update({ avatar_url: base64 }).eq('id', currentUserProfile.id);
       };
       reader.readAsDataURL(file);
     }
 
-    // ================= 3. BAZA ZAWODNIKÓW (SUPABASE) =================
+    // ================= 3. SYSTEM POWIADOMIEŃ I SPARINGÓW (BEZ SZTUCZNYCH POWIADOMIEŃ) =================
+    async function sendSparingRequest(targetFighter) {
+      if (!currentUserProfile) return;
+      if (currentUserProfile.id === targetFighter.id) {
+        alert("Nie możesz wysłać zaproszenia na sparing do samego siebie.");
+        return;
+      }
+
+      const reqObj = {
+        sender_id: currentUserProfile.id,
+        sender_name: currentUserProfile.full_name,
+        sender_club: currentUserProfile.club,
+        sender_style: currentUserProfile.fighting_style || 'MMA',
+        receiver_id: targetFighter.id,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        await db.from('sparing_requests').insert([reqObj]);
+      } catch (e) {
+        console.log("DB sparing_requests fallback");
+      }
+
+      // Zapis lokalny dla natychmiastowej spójności
+      let localReqs = JSON.parse(localStorage.getItem('fh_sparing_requests') || '[]');
+      localReqs.push(reqObj);
+      localStorage.setItem('fh_sparing_requests', JSON.stringify(localReqs));
+
+      alert(`🥊 Wysłano propozycję sparingu do zawodnika: ${targetFighter.full_name}!`);
+    }
+
+    async function loadSparingRequests() {
+      if (!currentUserProfile) return;
+      let requests = [];
+
+      try {
+        const { data, error } = await db.from('sparing_requests').select('*').eq('receiver_id', currentUserProfile.id).eq('status', 'pending');
+        if (!error && data) {
+          requests = data;
+        }
+      } catch (e) {
+        console.log("Fetch error, using storage fallback");
+      }
+
+      const localReqs = JSON.parse(localStorage.getItem('fh_sparing_requests') || '[]');
+      const filteredLocal = localReqs.filter(r => r.receiver_id === currentUserProfile.id && r.status === 'pending');
+      
+      // Scalanie unikalne
+      requests = [...requests, ...filteredLocal.filter(l => !requests.some(r => r.created_at === l.created_at))];
+      incomingSparingRequests = requests;
+
+      const badge = document.getElementById('notifBadge');
+      if (incomingSparingRequests.length > 0) {
+        badge.innerText = incomingSparingRequests.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function openNotificationsModal() {
+      const container = document.getElementById('notificationsList');
+      if (incomingSparingRequests.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-xs text-app-muted py-8">
+            <i data-lucide="bell-off" class="w-8 h-8 mx-auto mb-2 text-gray-600"></i>
+            Brak nowych propozycji sparingów.
+          </div>
+        `;
+      } else {
+        container.innerHTML = incomingSparingRequests.map((req, idx) => `
+          <div class="bg-black/50 border border-app-border rounded-2xl p-3 space-y-2 card-shadow">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-app-red/20 border border-app-red text-app-red flex items-center justify-center font-black text-xs">
+                🥊
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-bold text-white">${req.sender_name}</h4>
+                <p class="text-[10px] text-app-muted">${req.sender_club} • Styl: ${req.sender_style || 'MMA'}</p>
+              </div>
+            </div>
+            <p class="text-[11px] text-gray-300 bg-app-card p-2 rounded-xl border border-app-border">
+              Proponuje wspólny sparing stójkowy / parterowy.
+            </p>
+            <div class="flex gap-2 pt-1">
+              <button onclick="acceptSparingRequest(${idx})" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl active:scale-95 transition-all">
+                Akceptuj ✓
+              </button>
+              <button onclick="rejectSparingRequest(${idx})" class="flex-1 py-1.5 bg-black/40 border border-app-border hover:bg-black text-gray-300 text-xs font-bold rounded-xl active:scale-95 transition-all">
+                Odrzuć
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+      lucide.createIcons();
+      toggleModal('notificationsModal', true);
+    }
+
+    async function acceptSparingRequest(idx) {
+      const req = incomingSparingRequests[idx];
+      if (!req || !currentUserProfile) return;
+
+      const newSparringsCount = (currentUserProfile.sparrings_count || 0) + 1;
+      currentUserProfile.sparrings_count = newSparringsCount;
+      updateProfileUI();
+
+      try {
+        await db.from('profiles').update({ sparrings_count: newSparringsCount }).eq('id', currentUserProfile.id);
+        if (req.id) {
+          await db.from('sparing_requests').update({ status: 'accepted' }).eq('id', req.id);
+        }
+      } catch (e) {}
+
+      // Aktualizacja localStorage
+      let localReqs = JSON.parse(localStorage.getItem('fh_sparing_requests') || '[]');
+      localReqs = localReqs.filter(r => r.created_at !== req.created_at);
+      localStorage.setItem('fh_sparing_requests', JSON.stringify(localReqs));
+
+      incomingSparingRequests.splice(idx, 1);
+      openNotificationsModal();
+      loadSparingRequests();
+      alert(`🥊 Zaakceptowano sparing z zawodnikiem ${req.sender_name}! Dodano do Twoich statystyk.`);
+    }
+
+    async function rejectSparingRequest(idx) {
+      const req = incomingSparingRequests[idx];
+      if (!req) return;
+
+      try {
+        if (req.id) {
+          await db.from('sparing_requests').update({ status: 'rejected' }).eq('id', req.id);
+        }
+      } catch (e) {}
+
+      let localReqs = JSON.parse(localStorage.getItem('fh_sparing_requests') || '[]');
+      localReqs = localReqs.filter(r => r.created_at !== req.created_at);
+      localStorage.setItem('fh_sparing_requests', JSON.stringify(localReqs));
+
+      incomingSparingRequests.splice(idx, 1);
+      openNotificationsModal();
+      loadSparingRequests();
+    }
+
+    // ================= 4. CZAT MIĘDZY ZAWODNIKAMI =================
+    function openChatWithFighter(fighter) {
+      if (!currentUserProfile) return;
+      activeChatRecipient = fighter;
+      document.getElementById('chatRecipientName').innerText = fighter.full_name;
+      document.getElementById('chatRecipientClub').innerText = `${fighter.club} • ${fighter.city}`;
+      document.getElementById('chatRecipientAvatar').innerText = fighter.full_name ? fighter.full_name.substring(0, 2).toUpperCase() : 'PL';
+      renderChatMessages();
+      toggleModal('chatModal', true);
+    }
+
+    function getChatStorageKey() {
+      if (!currentUserProfile || !activeChatRecipient) return 'fh_chat_temp';
+      const ids = [currentUserProfile.id, activeChatRecipient.id].sort();
+      return `fh_chat_${ids[0]}_${ids[1]}`;
+    }
+
+    function renderChatMessages() {
+      const container = document.getElementById('chatMessagesContainer');
+      const messages = JSON.parse(localStorage.getItem(getChatStorageKey()) || '[]');
+
+      if (messages.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-xs text-app-muted py-12">
+            Napisz pierwszą wiadomość i ustal termin treningu!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = messages.map(m => {
+        const isMe = m.sender_id === currentUserProfile.id;
+        return `
+          <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+            <div class="max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed ${isMe ? 'bg-app-red text-white' : 'bg-black/60 border border-app-border text-gray-200'}">
+              ${m.text}
+            </div>
+            <span class="text-[9px] text-app-muted mt-0.5 px-1">${m.time}</span>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function handleSendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInputMessage');
+      const text = input.value.trim();
+      if (!text || !currentUserProfile || !activeChatRecipient) return;
+
+      const newMsg = {
+        sender_id: currentUserProfile.id,
+        sender_name: currentUserProfile.full_name,
+        receiver_id: activeChatRecipient.id,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        created_at: new Date().toISOString()
+      };
+
+      const key = getChatStorageKey();
+      const messages = JSON.parse(localStorage.getItem(key) || '[]');
+      messages.push(newMsg);
+      localStorage.setItem(key, JSON.stringify(messages));
+
+      try {
+        await db.from('messages').insert([newMsg]);
+      } catch (err) {}
+
+      input.value = '';
+      renderChatMessages();
+    }
+
+    // ================= 5. BAZA ZAWODNIKÓW (SUPABASE) =================
     async function loadFightersFromSupabase() {
       const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
       if (!error && data) {
@@ -891,25 +1226,38 @@
       container.innerHTML = list.map(f => {
         const initials = f.full_name ? f.full_name.substring(0,2).toUpperCase() : 'PL';
         const hasAvatar = f.avatar_url && f.avatar_url.startsWith('data:image');
+        const styleName = f.fighting_style || 'MMA';
+        const fighterObjStr = encodeURIComponent(JSON.stringify(f));
 
         return `
-        <div class="bg-app-card border border-app-border rounded-xl p-3 flex items-center justify-between gap-3 card-shadow interactive-card">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-xl overflow-hidden bg-black/60 border border-app-border flex items-center justify-center font-title font-bold text-xs text-app-red">
-              ${hasAvatar ? `<img src="${f.avatar_url}" class="w-full h-full object-cover" />` : initials}
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold text-white">${f.full_name}</span>
-                <span class="text-[9px] font-bold bg-black/50 text-sky-400 border border-app-border px-1.5 py-0.2 rounded">${f.weight_category}</span>
+        <div class="bg-app-card border border-app-border rounded-2xl p-3.5 space-y-3 card-shadow interactive-card">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl overflow-hidden bg-black/60 border border-app-border flex items-center justify-center font-title font-bold text-xs text-app-red flex-shrink-0">
+                ${hasAvatar ? `<img src="${f.avatar_url}" class="w-full h-full object-cover" />` : initials}
               </div>
-              <p class="text-[10px] text-app-muted">${f.club} • ${f.city}</p>
-              <span class="text-[10px] text-emerald-400 font-semibold">Bilans: ${f.record}</span>
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-xs font-bold text-white">${f.full_name}</span>
+                  <span class="text-[9px] font-bold bg-black/50 text-sky-400 border border-app-border px-1.5 py-0.5 rounded">${f.weight_category}</span>
+                </div>
+                <p class="text-[10px] text-app-muted mt-0.5">${f.club} • ${f.city}</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[10px] text-amber-400 font-bold bg-amber-950/40 border border-amber-800/50 px-1.5 py-0.2 rounded">🥋 ${styleName}</span>
+                  <span class="text-[10px] text-emerald-400 font-semibold">Bilans: ${f.record || '0-0-0'}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <button onclick="alert('Zaproszenie na sparing wysłane do: ${f.full_name}')" class="px-2.5 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight text-gray-200 text-[10px] font-bold rounded-lg active:scale-95">
-            Sparing 🥊
-          </button>
+
+          <div class="flex gap-2 pt-1 border-t border-app-border/50">
+            <button onclick="sendSparingRequest(JSON.parse(decodeURIComponent('${fighterObjStr}')))" class="flex-1 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight text-rose-400 text-xs font-bold rounded-xl flex items-center justify-center gap-1 active:scale-95">
+              <i data-lucide="swords" class="w-3.5 h-3.5"></i> Sparing 🥊
+            </button>
+            <button onclick="openChatWithFighter(JSON.parse(decodeURIComponent('${fighterObjStr}')))" class="flex-1 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight text-sky-400 text-xs font-bold rounded-xl flex items-center justify-center gap-1 active:scale-95">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Czat 💬
+            </button>
+          </div>
         </div>
         `;
       }).join('');
@@ -918,11 +1266,16 @@
 
     function filterFightersLive() {
       const q = document.getElementById('fighterSearchInput').value.toLowerCase();
-      const filtered = liveFightersList.filter(f => f.full_name.toLowerCase().includes(q) || f.club.toLowerCase().includes(q));
+      const filtered = liveFightersList.filter(f => 
+        (f.full_name && f.full_name.toLowerCase().includes(q)) || 
+        (f.club && f.club.toLowerCase().includes(q)) ||
+        (f.fighting_style && f.fighting_style.toLowerCase().includes(q)) ||
+        (f.city && f.city.toLowerCase().includes(q))
+      );
       renderFighters(filtered);
     }
 
-    // ================= 4. POSTY ZE ZDJĘCIAMI =================
+    // ================= 6. POSTY & SYSTEM LAJKOWANIA =================
     async function loadPostsFromSupabase() {
       const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
       if (!error && data) {
@@ -936,7 +1289,9 @@
         container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak postów. Bądź pierwszym, który coś doda!</div>`;
         return;
       }
-      container.innerHTML = posts.map(p => `
+      container.innerHTML = posts.map(p => {
+        const likes = p.likes_count || p.likes || 0;
+        return `
         <div class="bg-app-card border border-app-border rounded-2xl overflow-hidden card-shadow interactive-card">
           <div class="p-3 flex items-center gap-2.5 border-b border-app-border/60">
             <div class="w-7 h-7 rounded-lg bg-black/60 border border-app-border text-app-red font-bold flex items-center justify-center text-xs">
@@ -949,9 +1304,33 @@
           </div>
           ${p.text_content ? `<p class="p-3 text-xs text-gray-300 leading-relaxed">${p.text_content}</p>` : ''}
           ${p.image_url ? `<img src="${p.image_url}" class="w-full h-48 object-cover bg-black" />` : ''}
+
+          <!-- Pasek lajka -->
+          <div class="p-2.5 bg-black/20 border-t border-app-border/60 flex items-center justify-between">
+            <button onclick="likePost('${p.id}', ${likes})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-app-card border border-app-border text-xs font-bold text-rose-400 hover:bg-rose-950/30 transition-all active:scale-95">
+              <i data-lucide="heart" class="w-3.5 h-3.5 fill-rose-500/20"></i>
+              <span id="postLikes_${p.id}">${likes}</span>
+            </button>
+            <span class="text-[10px] text-app-muted">Kliknij, aby docenić formę</span>
+          </div>
         </div>
-      `).join('');
+        `;
+      }).join('');
       lucide.createIcons();
+    }
+
+    async function likePost(postId, currentLikes) {
+      const newLikes = currentLikes + 1;
+      const countEl = document.getElementById(`postLikes_${postId}`);
+      if (countEl) countEl.innerText = newLikes;
+
+      try {
+        await db.from('posts').update({ likes_count: newLikes }).eq('id', postId);
+      } catch (err) {
+        try {
+          await db.from('posts').update({ likes: newLikes }).eq('id', postId);
+        } catch (e) {}
+      }
     }
 
     async function publishPostToSupabase() {
@@ -963,7 +1342,8 @@
         author_name: currentUserProfile.full_name,
         club: currentUserProfile.club,
         text_content: text,
-        image_url: selectedImageBase64
+        image_url: selectedImageBase64,
+        likes_count: 0
       }]);
 
       if (error) {
@@ -989,7 +1369,7 @@
       }
     }
 
-    // ================= 5. INTERAKTYWNY TRENING I WIDEO =================
+    // ================= 7. INTERAKTYWNY TRENING I WIDEO =================
     let activeWorkout = null;
     function startInteractiveWorkout(id) {
       activeWorkout = workoutPrograms[id];
@@ -1042,7 +1422,7 @@
       renderTrainingCards(cat);
     }
 
-    // ================= 6. ZAPIS WAGI =================
+    // ================= 8. ZAPIS WAGI =================
     function openWeightUpdateModal() {
       if (currentUserProfile) {
         document.getElementById('quickWeightInput').value = currentUserProfile.current_weight;
@@ -1060,7 +1440,7 @@
       }
     }
 
-    // ================= 7. NAWIGACJA Z PŁYNNYMI PRZEJŚCIAMI =================
+    // ================= 9. NAWIGACJA Z PŁYNNYMI PRZEJŚCIAMI =================
     function switchTab(t) {
       ['home', 'training', 'progress', 'fighters', 'profile'].forEach(tab => {
         const el = document.getElementById(`tab-${tab}`);
@@ -1074,6 +1454,10 @@
       activeTabEl.classList.add('block', 'tab-animate');
       document.getElementById(`nav-btn-${t}`).classList.replace('text-app-muted', 'text-app-red');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (t === 'home') {
+        randomizeDailyWorkout();
+      }
     }
 
     function toggleModal(id, open) {
@@ -1088,11 +1472,11 @@
     }
 
     function closeModal(id) {
-      if(id === 'workoutPlayerModal') document.getElementById('playerVideoIframe').src = "";
+      if (id === 'workoutPlayerModal') document.getElementById('playerVideoIframe').src = "";
       toggleModal(id, false);
     }
 
-    // Sprawdzenie sesji przy starcie
+    // Sprawdzenie sesji przy wejściu na stronę
     checkAuthSession();
   </script>
 </body>
