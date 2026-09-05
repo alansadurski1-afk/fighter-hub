@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0c0d12" />
+  <title>FIGHTER HUB // System Treningowy MMA</title>
+
+  <!-- Tailwind CSS & Lucide Icons & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#0c0d12',
+              card: '#131722',
+              cardHover: '#181d2b',
+              border: '#202637',
+              borderLight: '#2b344a',
+              red: '#e11d48',
+              redDark: '#9f1239',
+              gold: '#d97706',
+              cyan: '#0284c7',
+              emerald: '#059669',
+              muted: '#8e9bb2'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            title: ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { background-color: #0c0d12; font-family: 'Inter', sans-serif; padding-top: env(safe-area-inset-top); }
+    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem); }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+
+<body class="text-gray-200 antialiased min-h-screen flex flex-col justify-between selection:bg-app-red selection:text-white">
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-app-bg/90 border-b border-app-border px-4 h-14 flex items-center justify-between max-w-md mx-auto w-full">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 bg-app-red rounded-lg flex items-center justify-center font-title font-black text-white text-sm shadow">
+        PL
+      </div>
+      <div>
+        <span class="font-title text-base font-black tracking-wider text-white uppercase block leading-none">FIGHTER<span class="text-app-red">HUB</span></span>
+        <span class="text-[9px] font-bold tracking-widest text-app-muted uppercase">Polska Społeczność MMA</span>
+      </div>
+    </div>
+
+    <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-app-card border border-app-border px-2.5 py-1 rounded-xl active:scale-95 transition-all">
+      <div class="w-5 h-5 rounded-md bg-app-border flex items-center justify-center text-[10px] font-black text-app-red" id="topAvatarInitials">AK</div>
+      <span class="text-xs font-bold text-gray-300" id="topWeightLabel">79.2 kg</span>
+    </button>
+  </header>
+
+  <!-- ================= GŁÓWNA PRZESTRZEŃ (MOBILE) ================= -->
+  <main class="flex-1 max-w-md mx-auto w-full px-4 pt-3 safe-bottom">
+
+    <!-- ================= 1. TAB GŁÓWNY (HOME) ================= -->
+    <div id="tab-home" class="space-y-4 block">
+      <div class="flex items-center justify-between pt-1">
+        <div>
+          <span class="text-[10px] font-bold text-app-muted uppercase tracking-wider">Status zawodnika</span>
+          <h1 class="font-title text-xl font-extrabold uppercase text-white" id="homeFighterName">Aleksander Kowalczyk</h1>
+          <p class="text-xs text-app-muted flex items-center gap-1 mt-0.5" id="homeFighterClub">
+            <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> WCA Fight Team Warszawa
+          </p>
+        </div>
+        <span class="text-[10px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 rounded-md">
+          CAMP ACTIVE
+        </span>
+      </div>
+
+      <!-- Turniej Główny -->
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[10px] font-black text-amber-500 uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="trophy" class="w-3 h-3"></i> Turniej Główny
+            </span>
+            <h3 class="font-title text-base font-bold text-white uppercase">Mistrzostwa Polski MMA</h3>
+            <p class="text-xs text-app-muted">Warszawa • Kat. Senior -77.1 kg</p>
+          </div>
+          <span class="text-xs font-bold text-white bg-black/40 px-2 py-1 rounded-lg border border-app-border">
+            Za 14 dni
+          </span>
+        </div>
+
+        <div class="bg-black/30 border border-app-border rounded-xl p-2.5">
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-app-muted">Aktualna: <b class="text-white" id="homeCurWeight">79.2 kg</b></span>
+            <span class="text-amber-500 font-bold" id="homeWeightDiff">Do limitu: 2.1 kg</span>
+          </div>
+          <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-app-red h-full" style="width: 78%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skrót do dzisiejszego treningu -->
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Polecany Trening Dnia</span>
+          <span class="text-[10px] text-app-muted">4 ćwiczenia z przewodnikiem</span>
+        </div>
+        <h3 class="font-title text-sm font-bold text-white uppercase">
+          Podwójny Jab + Low Kick i Odejście Kątowe
+        </h3>
+        <p class="text-xs text-app-muted leading-relaxed">
+          Stójkowy schemat ataku i przełamywania obrony rywala z aktywnym instruktarzem.
+        </p>
+        <button onclick="startInteractiveWorkout(0)" class="w-full py-2.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Rozpocznij Trening Interaktywny
+        </button>
+      </div>
+
+      <!-- Kafelki szybkiego dostępu -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div onclick="switchTab('training')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer">
+          <div class="p-2.5 rounded-lg bg-rose-500/10 text-rose-400"><i data-lucide="dumbbell" class="w-4 h-4"></i></div>
+          <div>
+            <div class="text-xs font-bold text-white">Treningi</div>
+            <div class="text-[10px] text-app-muted">Baza & Poradniki</div>
+          </div>
+        </div>
+
+        <div onclick="switchTab('progress')" class="bg-app-card border border-app-border p-3.5 rounded-xl flex items-center gap-3 active:scale-95 transition-all cursor-pointer">
+          <div class="p-2.5 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
+          <div>
+            <div class="text-xs font-bold text-white">Mój Progres</div>
+            <div class="text-[10px] text-app-muted">Waga, PR-y, sparingi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2. TAB TRENING (OPCJE TRENINGOWE & PORADNIKI) ================= -->
+    <div id="tab-training" class="space-y-4 hidden">
+      <div class="pt-1">
+        <span class="text-[10px] font-bold text-app-red uppercase tracking-wider">Interaktywny Trener</span>
+        <h2 class="font-title text-xl font-extrabold uppercase text-white">Programy Treningowe</h2>
+        <p class="text-xs text-app-muted">Wybierz sesję – aplikacja przeprowadzi Cię przez ćwiczenia z poradnikiem.</p>
+      </div>
+
+      <!-- Filtry kategorii -->
+      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+        <button onclick="filterTrainingList('ALL')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap" id="tf-all">Wszystkie</button>
+        <button onclick="filterTrainingList('STRIKING')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-striking">🥊 Boks & Jaby</button>
+        <button onclick="filterTrainingList('GRAPPLING')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-grappling">🤼 Zapasy & BJJ</button>
+        <button onclick="filterTrainingList('MOTOR')" class="t-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap" id="tf-motor">⚡ Motoryka & Siła</button>
+      </div>
+
+      <!-- Lista dostępnych treningów generowana z JS -->
+      <div class="space-y-3" id="trainingCardsContainer">
+        <!-- Renderowane przez JS -->
+      </div>
+    </div>
+
+    <!-- ================= 3. TAB PROGRES ================= -->
+    <div id="tab-progress" class="space-y-4 hidden">
+      <div class="flex justify-between items-center pt-1">
+        <div>
+          <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Statystyki & Wyniki</span>
+          <h2 class="font-title text-xl font-extrabold uppercase text-white">Twój Progres</h2>
+        </div>
+        <button onclick="openWeightUpdateModal()" class="px-3 py-1.5 bg-app-card border border-app-border text-xs font-bold text-sky-400 rounded-xl flex items-center gap-1">
+          <i data-lucide="scale" class="w-3.5 h-3.5"></i> Zapisz wagę
+        </button>
+      </div>
+
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase text-app-muted">Kontrola Wagi Startowej</span>
+          <span class="text-xs font-bold text-white" id="progWeightStatus">79.2 kg / 77.1 kg</span>
+        </div>
+        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+          <div class="bg-gradient-to-r from-emerald-500 to-app-red h-full" style="width: 80%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-app-muted">
+          <span>Start: 83.0 kg</span>
+          <span class="text-amber-500 font-bold">Zbite: -3.8 kg</span>
+          <span>Limit: 77.1 kg</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center">
+          <span class="text-[10px] font-bold text-app-muted uppercase block">Sparingi w tym m-cu</span>
+          <span class="font-title text-2xl font-black text-white" id="progSparrings">32 rundy</span>
+          <button onclick="addSparringRound()" class="mt-1 text-[10px] text-app-red font-bold hover:underline">+ Dodaj rundę</button>
+        </div>
+
+        <div class="bg-app-card border border-app-border p-3.5 rounded-xl text-center">
+          <span class="text-[10px] font-bold text-app-muted uppercase block">Ukończone sesje</span>
+          <span class="font-title text-2xl font-black text-emerald-400" id="progWorkouts">48</span>
+          <span class="text-[10px] text-app-muted block mt-1">Status: W gazie</span>
+        </div>
+      </div>
+
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <h3 class="font-title text-xs font-bold text-white uppercase">Rekordy Motoryczne (PR)</h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between items-center p-2 bg-black/30 rounded-lg border border-app-border">
+            <span class="text-gray-300">Martwy ciąg (Trap Bar)</span>
+            <span class="font-bold text-white">180 kg</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-black/30 rounded-lg border border-app-border">
+            <span class="text-gray-300">Bieg na 5 km (Czas)</span>
+            <span class="font-bold text-white">21:40 min</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-black/30 rounded-lg border border-app-border">
+            <span class="text-gray-300">Maksymalne podciągnięcia</span>
+            <span class="font-bold text-white">24 powt.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 4. TAB ZAWODNICY ================= -->
+    <div id="tab-fighters" class="space-y-3.5 hidden">
+      <div class="pt-1">
+        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Krajowa Baza Fighterów</span>
+        <h2 class="font-title text-xl font-extrabold uppercase text-white">Zawodnicy w Polsce</h2>
+      </div>
+
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-app-muted absolute left-3 top-3"></i>
+        <input 
+          type="text" 
+          id="fighterSearchInput" 
+          oninput="renderFightersList()" 
+          placeholder="Szukaj po nazwisku, klubie lub mieście..." 
+          class="w-full bg-app-card border border-app-border rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-red"
+        />
+      </div>
+
+      <div class="space-y-2.5" id="fightersListContainer">
+        <!-- Renderowane przez JS -->
+      </div>
+    </div>
+
+    <!-- ================= 5. TAB PROFIL (POSTY ZE ZDJĘCIAMI) ================= -->
+    <div id="tab-profile" class="space-y-4 hidden">
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <div class="flex items-center gap-3.5">
+          <div class="w-16 h-16 rounded-2xl bg-slate-800 border-2 border-app-red p-1 overflow-hidden flex items-center justify-center">
+            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="w-full h-full object-cover rounded-xl" />
+          </div>
+          <div>
+            <h2 class="font-title text-base font-black text-white uppercase" id="profName">Aleksander Kowalczyk</h2>
+            <div class="text-xs text-app-muted flex items-center gap-1 font-semibold" id="profClub">
+              <i data-lucide="shield" class="w-3 h-3 text-app-red"></i> WCA Fight Team Warszawa
+            </div>
+            <div class="text-[11px] text-sky-400 font-bold" id="profDivision">
+              Kat. Półśrednia (-77.1 kg) • Senior
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center bg-black/40 border border-app-border p-2.5 rounded-xl">
+          <div>
+            <span class="text-[9px] font-bold text-app-muted uppercase">BILANS AMAT.</span>
+            <div class="font-title text-base font-black text-white" id="profRecord">8 - 1 - 0</div>
+          </div>
+          <div class="border-x border-app-border">
+            <span class="text-[9px] font-bold text-app-muted uppercase">MEDALE</span>
+            <div class="font-title text-base font-black text-amber-500" id="profMedals">4x 🥇 2x 🥈</div>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-app-muted uppercase">POSTY</span>
+            <div class="font-title text-base font-black text-gray-300" id="profPostsCount">2</div>
+          </div>
+        </div>
+
+        <button onclick="openEditProfileModal()" class="w-full py-2 bg-app-border text-gray-200 font-title text-xs font-bold uppercase rounded-xl flex items-center justify-center gap-1.5">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edytuj Profil & Klub
+        </button>
+      </div>
+
+      <!-- Kreator wpisów z własnym zdjęciem -->
+      <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-3">
+        <span class="text-xs font-bold text-white block">Dodaj wpis z treningu</span>
+        <textarea id="postTextInput" rows="2" placeholder="Jak poszedł dzisiejszy trening lub sparingi?..." class="w-full bg-black/40 border border-app-border rounded-xl p-2.5 text-xs text-white placeholder-app-muted focus:outline-none focus:border-app-red"></textarea>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-black/40 border border-app-border hover:border-app-borderLight rounded-xl text-xs text-gray-300">
+            <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span id="photoUploadedNotice">Dodaj zdjęcie</span>
+            <input type="file" id="postImageFileInput" accept="image/*" class="hidden" onchange="handleImageFileSelect(event)" />
+          </label>
+
+          <button onclick="publishNewPost()" class="px-4 py-1.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl flex items-center gap-1 active:scale-95">
+            <i data-lucide="send" class="w-3 h-3"></i> Opublikuj
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3.5" id="profileFeedContainer">
+        <!-- Feed postów -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: AKTYWNY TRENER INTERAKTYWNY ================= -->
+  <div id="workoutPlayerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden items-center justify-center p-4">
+    <div class="bg-app-card border border-app-border rounded-3xl max-w-sm w-full p-5 relative max-h-[92vh] overflow-y-auto flex flex-col justify-between">
+      
+      <!-- Nagłówek aktywnej sesji -->
+      <div>
+        <div class="flex justify-between items-center border-b border-app-border pb-3 mb-3">
+          <div>
+            <span class="text-[10px] font-black uppercase text-app-red tracking-wider" id="playerCategoryBadge">STÓJKA & BOKS</span>
+            <h3 class="font-title text-base font-black text-white uppercase" id="playerWorkoutTitle">Sesja Treningowa</h3>
+          </div>
+          <button onclick="closeModal('workoutPlayerModal')" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Pasek postępu ćwiczeń -->
+        <div class="flex items-center justify-between text-xs font-bold text-app-muted mb-1">
+          <span>Ćwiczenie <span id="playerStepNum" class="text-white">1</span> z <span id="playerTotalSteps">4</span></span>
+          <span class="text-emerald-400" id="playerStepPercent">25%</span>
+        </div>
+        <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden mb-4">
+          <div class="bg-gradient-to-r from-emerald-500 to-app-red h-full transition-all duration-300" id="playerProgressBar" style="width: 25%"></div>
+        </div>
+
+        <!-- Szczegóły ćwiczenia & Poradnik -->
+        <div class="bg-black/50 border border-app-border rounded-2xl p-4 space-y-3 mb-4">
+          <div class="flex justify-between items-start">
+            <h4 class="font-title text-sm font-bold text-white uppercase" id="playerDrillTitle">Nazwa ćwiczenia</h4>
+            <span class="text-[11px] font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800 px-2 py-0.5 rounded" id="playerDrillReps">3 serie x 10 powt.</span>
+          </div>
+
+          <!-- Poradnik krok po kroku -->
+          <div class="space-y-2 text-xs text-gray-300">
+            <div class="p-2.5 bg-app-card rounded-xl border border-app-border/80">
+              <span class="text-[10px] font-bold text-sky-400 uppercase block mb-1 flex items-center gap-1">
+                <i data-lucide="info" class="w-3 h-3"></i> Jak prawidłowo wykonać:
+              </span>
+              <p class="leading-relaxed text-gray-300" id="playerDrillInstructions">Instrukcja...</p>
+            </div>
+
+            <div class="p-2.5 bg-emerald-950/30 rounded-xl border border-emerald-900/60">
+              <span class="text-[10px] font-bold text-emerald-400 uppercase block mb-1 flex items-center gap-1">
+                <i data-lucide="check-circle" class="w-3 h-3"></i> Wskazówka Trenera:
+              </span>
+              <p class="leading-relaxed text-emerald-200" id="playerDrillCoachTip">Wskazówka...</p>
+            </div>
+
+            <div class="p-2.5 bg-rose-950/30 rounded-xl border border-rose-900/60">
+              <span class="text-[10px] font-bold text-rose-400 uppercase block mb-1 flex items-center gap-1">
+                <i data-lucide="alert-triangle" class="w-3 h-3"></i> Najczęstszy błąd:
+              </span>
+              <p class="leading-relaxed text-rose-200" id="playerDrillMistake">Błąd...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Przycisk przejścia dalej -->
+      <div class="pt-2">
+        <button onclick="nextWorkoutStep()" class="w-full py-3 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow">
+          <span id="playerNextBtnText">Zrobione! Następne Ćwiczenie</span>
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODALE POMOCNICZE ================= -->
+  <!-- Edycja profilu -->
+  <div id="editProfileModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-app-card border border-app-border rounded-2xl max-w-sm w-full p-5 relative">
+      <button onclick="closeModal('editProfileModal')" class="absolute top-4 right-4 text-app-muted p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3 class="font-title text-base font-black uppercase text-white mb-4">Edycja Profilu</h3>
+      <form onsubmit="saveProfileForm(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-gray-300 mb-1">Imię i Nazwisko</label>
+          <input id="inputName" type="text" class="w-full bg-black/60 border border-app-border rounded-xl px-3 py-2 text-white" required />
+        </div>
+        <div>
+          <label class="block font-bold text-gray-300 mb-1">Klub & Miasto</label>
+          <input id="inputClub" type="text" class="w-full bg-black/60 border border-app-border rounded-xl px-3 py-2 text-white" required />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-gray-300 mb-1">Rekord</label>
+            <input id="inputRecord" type="text" class="w-full bg-black/60 border border-app-border rounded-xl px-2 py-2 text-white" required />
+          </div>
+          <div>
+            <label class="block font-bold text-gray-300 mb-1">Waga (kg)</label>
+            <input id="inputCurrentWeight" type="number" step="0.1" class="w-full bg-black/60 border border-app-border rounded-xl px-2 py-2 text-white" required />
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('editProfileModal')" class="px-4 py-2 bg-app-border rounded-xl text-gray-300 font-bold">Anuluj</button>
+          <button type="submit" class="px-5 py-2 bg-app-red text-white font-title font-black uppercase rounded-xl">Zapisz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Zapis wagi -->
+  <div id="weightUpdateModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-app-card border border-app-border rounded-2xl max-w-xs w-full p-5 relative">
+      <button onclick="closeModal('weightUpdateModal')" class="absolute top-4 right-4 text-app-muted p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3 class="font-title text-sm font-bold uppercase text-white mb-3">Zapisz Wagę</h3>
+      <input type="number" step="0.1" id="quickWeightInput" class="w-full bg-black/60 border border-app-border rounded-xl px-3 py-2 text-sm text-white mb-3 text-center font-bold" />
+      <button onclick="saveQuickWeight()" class="w-full py-2 bg-sky-600 hover:bg-sky-500 font-title font-bold text-xs uppercase text-white rounded-xl">Zapisz</button>
+    </div>
+  </div>
+
+  <!-- ================= DOLNY PASEK NAWIGACJI ================= -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-2xl bg-app-bg/95 border-t border-app-border px-2 py-1.5 flex justify-around items-center max-w-md mx-auto" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+    <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-red transition-all active:scale-90">
+      <i data-lucide="home" class="w-4 h-4"></i>
+      <span class="text-[9px] font-bold uppercase tracking-wider">Główny</span>
+    </button>
+    <button onclick="switchTab('training')" id="nav-btn-training" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-all active:scale-90">
+      <i data-lucide="dumbbell" class="w-4 h-4"></i>
+      <span class="text-[9px] font-bold uppercase tracking-wider">Trening</span>
+    </button>
+    <button onclick="switchTab('progress')" id="nav-btn-progress" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-all active:scale-90">
+      <i data-lucide="trending-up" class="w-4 h-4"></i>
+      <span class="text-[9px] font-bold uppercase tracking-wider">Progres</span>
+    </button>
+    <button onclick="switchTab('fighters')" id="nav-btn-fighters" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-all active:scale-90">
+      <i data-lucide="users" class="w-4 h-4"></i>
+      <span class="text-[9px] font-bold uppercase tracking-wider">Zawodnicy</span>
+    </button>
+    <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-app-muted transition-all active:scale-90">
+      <i data-lucide="user" class="w-4 h-4"></i>
+      <span class="text-[9px] font-bold uppercase tracking-wider">Profil</span>
+    </button>
+  </nav>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    lucide.createIcons();
+    const SUPABASE_URL = "TUTAJ_WKLEJ_SWOJ_PROJECT_URL";
+const SUPABASE_ANON_KEY = "TUTAJ_WKLEJ_SWOJ_ANON_KEY";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ================= BAZA TRENINGÓW Z PORADNIKAMI =================
+    const workoutPrograms = [
+      {
+        id: 0,
+        category: 'STRIKING',
+        badge: 'BOKS & STÓJKA',
+        title: 'Jab Mastery & Odejście Kątowe',
+        desc: 'Kompleksowy zestaw budowania przewagi lewym prostym i bezpiecznego schodzenia z linii ciosu.',
+        steps: [
+          {
+            title: '1. Prawy podwójny Jab ze zmianą tempa',
+            reps: '3 serie x 15 powtórzeń',
+            instructions: 'Pierwszy jab wyprowadzasz miękko w rękawice rywala jako badanie dystansu. Przy drugim wykonujesz dynamiczny podkrok nogą wykroczną i wkręcasz bark, uderzając prosto w szczękę.',
+            tip: 'Broda zawsze schowana za uniesionym barkiem bijącej ręki. Prawa dłoń przyklejona do policzka.',
+            mistake: 'Opuszczanie prawej ręki przy wyprowadzaniu lewego prostego, co naraża na kontrę overhandem.'
+          },
+          {
+            title: '2. Jab na dół (Body Jab) + Overhand na górę',
+            reps: '4 serie x 10 powtórzeń',
+            instructions: 'Obniż poziom na ugiętych kolanach (nie zginaj samych pleców), wbij lewy prosty w splot słoneczny rywala, a po powrocie natychmiast wystrzel prawym cepem nad opuszczoną rękawicą przeciwnika.',
+            tip: 'Głowa przy uderzeniu na dół musi zejść poza linię ewentualnego kontrującego prostego rywala.',
+            mistake: 'Zginanie się w pasie zamiast obniżenia pozycji na nogach, co grozi nadzianiem się na kolano.'
+          },
+          {
+            title: '3. Low Kick na łydkę (Calf Kick) po zwodzie lewym',
+            reps: '3 serie x 12 powtórzeń',
+            instructions: 'Markujesz lewy prosty, by rywal przeniósł ciężar ciała na przednią nogę. Pod kątem 45 stopni wbijasz twardy piszczel w nerw strzałkowy na zewnętrznej części jego łydki.',
+            tip: 'Ręka po stronie kopiącej osłania twarz lub odpycha ramię rywala.',
+            mistake: 'Kopanie samą stopą zamiast twardą kością piszczelową.'
+          },
+          {
+            title: '4. Shadowboxing z wyjściem kątowym (Pivot)',
+            reps: '3 rundy x 2 minuty',
+            instructions: 'Po każdej zadanej kombinacji 1-2 wykonaj pivot (obrót na przedniej stopie o 90 stopni), zostawiając rywala bijącego w próżnię.',
+            tip: 'Zachowaj szeroki rozstaw nóg – nie krzyżuj stóp w trakcie obrotu.',
+            mistake: 'Utrata równowagi przez zbyt wąskie stawianie stóp po pivocie.'
+          }
+        ]
+      },
+      {
+        id: 1,
+        category: 'GRAPPLING',
+        badge: 'ZAPASY & KLINCZ',
+        title: 'Wejścia w Nogi pod Klatką (Takedowns)',
+        desc: 'Techniki skracania dystansu ciosami i finalizacji obaleń pod siatką.',
+        steps: [
+          {
+            title: '1. Zmyłka Overhandem do Double Leg Takedown',
+            reps: '4 serie x 8 powtórzeń',
+            instructions: 'Zainicjuj zamachowy prawy sierp. Gdy rywal unosi gardę, zanurkuj pod jego łokciami, wbijając kolano między jego stopy i chwytając oburącz pod kolanami.',
+            tip: 'Głowa musi być mocno dociśnięta do żeber przeciwnika, wzrok skierowany przed siebie, nie w ziemię!',
+            mistake: 'Pochylanie głowy w dół, co natychmiast wystawia Cię na gilotynę.'
+          },
+          {
+            title: '2. Obrona Sprawlem + Przejście do D\'Arce Choke',
+            reps: '4 serie x 6 powtórzeń na stronę',
+            instructions: 'Gdy partner wchodzi w nogi, wyrzuć biodra mocno w tył na matę. Przełóż rękę pod jego pachą, owijając szyję i zapnij chwyt bicepsem.',
+            tip: 'Dociśnij klatkę piersiową do karku rywala, odcinając mu możliwość powrotu do stójki.',
+            mistake: 'Zbyt płytkie włożenie ręki atakującej pod pachę rywala.'
+          }
+        ]
+      },
+      {
+        id: 2,
+        category: 'MOTOR',
+        badge: 'SIŁA & DYNAMIKA',
+        title: 'Moc Eksplozywna pod Sporty Walki',
+        desc: 'Budowanie potężnej siły bioder, szybkości ciosu i rotacji tułowia.',
+        steps: [
+          {
+            title: '1. Trap Bar Jumps (Wskoki z gryfem)',
+            reps: '4 serie x 5 powtórzeń (ciężar 30% CM)',
+            instructions: 'Ustaw się wewnątrz gryfu Trap Bar. Zejdź do półprzysiadu i eksplozywnie wyskocz w górę, prostując biodra w ułamku sekundy. Ląduj miękko na palcach.',
+            tip: 'Skup się na maksymalnej prędkości wyjścia w górę, nie na ciężarze.',
+            mistake: 'Lądowanie na prostych kolanach.'
+          },
+          {
+            title: '2. Rzuty rotacyjne piłką lekarską o ścianę (Med Ball Rotational Throws)',
+            reps: '4 serie x 8 rzutów na stronę',
+            instructions: 'Stań bokiem do ściany w pozycji walki. Zainicjuj ruch skrętem tylnej stopy i biodra, wyrzucając piłkę lekarską (5-8kg) z maksymalną siłą o ścianę.',
+            tip: 'Siła rzutu pochodzi z rotacji bioder, dokładnie tak jak przy wyprowadzaniu prawego sierpowego.',
+            mistake: 'Rzucanie samymi ramionami bez pracy nóg i rotacji miednicy.'
+          }
+        ]
+      }
+    ];
+
+    // ================= STATE & STORAGE =================
+    const defaultProfile = {
+      name: "Aleksander Kowalczyk",
+      club: "WCA Fight Team Warszawa",
+      division: "Półśrednia (-77.1 kg)",
+      record: "8 - 1 - 0",
+      medals: "4x 🥇 2x 🥈",
+      currentWeight: 79.2,
+      weightLimit: 77.1,
+      workouts: 48,
+      sparrings: 32
+    };
+
+    let profile = JSON.parse(localStorage.getItem('fighter_net_profile')) || defaultProfile;
+    let posts = JSON.parse(localStorage.getItem('fighter_net_posts')) || [
+      {
+        id: 1,
+        author: "Aleksander Kowalczyk",
+        club: "WCA Fight Team Warszawa",
+        time: "Dzisiaj, 11:30",
+        text: "Mocne 6 rund sparingów zadaniowych przed Mistrzostwami Polski. Waga schodzi stabilnie, tempo i obrona przed obaleniami na najwyższym poziomie! 🥊⚡",
+        image: "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&auto=format&fit=crop&q=80",
+        likes: 19
+      }
+    ];
+
+    const allFighters = [
+      { id: 1, name: "Mateusz Gamrot (Fan)", club: "Czerwony Smok Poznań", weight: "-70kg", city: "Poznań", record: "6-0-0", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" },
+      { id: 2, name: "Kamil Bocheński", club: "Octopus Łódź", weight: "-77kg", city: "Łódź", record: "4-1-0", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" },
+      { id: 3, name: "Damian Zając", club: "Berkut WCA", weight: "-77kg", city: "Warszawa", record: "7-2-0", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80" }
+    ];
+
+    let currentSelectedImageBase64 = null;
+    let currentWorkout = null;
+    let currentStepIndex = 0;
+
+    function saveState() {
+      localStorage.setItem('fighter_net_profile', JSON.stringify(profile));
+      localStorage.setItem('fighter_net_posts', JSON.stringify(posts));
+      renderUI();
+    }
+
+    function renderUI() {
+      const initials = profile.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('topAvatarInitials').innerText = initials;
+      document.getElementById('topWeightLabel').innerText = `${profile.currentWeight.toFixed(1)} kg`;
+
+      document.getElementById('homeFighterName').innerText = profile.name;
+      document.getElementById('homeFighterClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${profile.club}`;
+      document.getElementById('homeCurWeight').innerText = `${profile.currentWeight.toFixed(1)} kg`;
+      const diff = (profile.currentWeight - profile.weightLimit).toFixed(1);
+      document.getElementById('homeWeightDiff').innerText = diff > 0 ? `Do limitu: ${diff} kg` : "Waga zrobiona! 🎯";
+
+      document.getElementById('progWeightStatus').innerText = `${profile.currentWeight.toFixed(1)} kg / ${profile.weightLimit.toFixed(1)} kg`;
+      document.getElementById('progSparrings').innerText = `${profile.sparrings} rund`;
+      document.getElementById('progWorkouts').innerText = profile.workouts;
+
+      document.getElementById('profName').innerText = profile.name;
+      document.getElementById('profClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${profile.club}`;
+      document.getElementById('profDivision').innerText = `Kat. ${profile.division} • Senior`;
+      document.getElementById('profRecord').innerText = profile.record;
+      document.getElementById('profMedals').innerText = profile.medals;
+      document.getElementById('profPostsCount').innerText = posts.length;
+
+      renderTrainingCards('ALL');
+      renderPostsFeed();
+      renderFightersList();
+      lucide.createIcons();
+    }
+
+    // ================= INTERAKTYWNY PLAYER TRENINGOWY =================
+    function startInteractiveWorkout(workoutId) {
+      currentWorkout = workoutPrograms[workoutId];
+      currentStepIndex = 0;
+      updateWorkoutPlayerUI();
+      toggleModal('workoutPlayerModal', true);
+    }
+
+    function updateWorkoutPlayerUI() {
+      const step = currentWorkout.steps[currentStepIndex];
+      const totalSteps = currentWorkout.steps.length;
+      const progressPercent = Math.round(((currentStepIndex + 1) / totalSteps) * 100);
+
+      document.getElementById('playerCategoryBadge').innerText = currentWorkout.badge;
+      document.getElementById('playerWorkoutTitle').innerText = currentWorkout.title;
+      document.getElementById('playerStepNum').innerText = currentStepIndex + 1;
+      document.getElementById('playerTotalSteps').innerText = totalSteps;
+      document.getElementById('playerStepPercent').innerText = `${progressPercent}%`;
+      document.getElementById('playerProgressBar').style.width = `${progressPercent}%`;
+
+      document.getElementById('playerDrillTitle').innerText = step.title;
+      document.getElementById('playerDrillReps').innerText = step.reps;
+      document.getElementById('playerDrillInstructions').innerText = step.instructions;
+      document.getElementById('playerDrillCoachTip').innerText = step.tip;
+      document.getElementById('playerDrillMistake').innerText = step.mistake;
+
+      const isLast = currentStepIndex === totalSteps - 1;
+      document.getElementById('playerNextBtnText').innerText = isLast ? "Zakończ i Zapisz Trening ✓" : "Zrobione! Następne Ćwiczenie";
+      lucide.createIcons();
+    }
+
+    function nextWorkoutStep() {
+      if (currentStepIndex < currentWorkout.steps.length - 1) {
+        currentStepIndex++;
+        updateWorkoutPlayerUI();
+      } else {
+        // Ukończono cały trening
+        profile.workouts += 1;
+        saveState();
+        toggleModal('workoutPlayerModal', false);
+        alert(`🏆 Gratulacje mistrzu! Trening "${currentWorkout.title}" został zaliczony i dodany do Twoich statystyk (+1)!`);
+      }
+    }
+
+    // ================= LISTA TRENINGÓW =================
+    function renderTrainingCards(filterCat) {
+      const container = document.getElementById('trainingCardsContainer');
+      const filtered = filterCat === 'ALL' ? workoutPrograms : workoutPrograms.filter(w => w.category === filterCat);
+
+      container.innerHTML = filtered.map(w => `
+        <div class="bg-app-card border border-app-border rounded-2xl p-4 card-shadow space-y-2.5">
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-bold text-rose-400 bg-rose-950/60 border border-rose-900 px-2 py-0.5 rounded">${w.badge}</span>
+            <span class="text-[10px] text-app-muted">${w.steps.length} ćwiczenia</span>
+          </div>
+          <h3 class="font-title text-sm font-bold text-white uppercase">${w.title}</h3>
+          <p class="text-xs text-app-muted leading-relaxed">${w.desc}</p>
+          <div class="pt-2 flex justify-between items-center border-t border-app-border">
+            <span class="text-xs text-emerald-400 font-bold">Poradnik wideo & wskazówki</span>
+            <button onclick="startInteractiveWorkout(${w.id})" class="px-3.5 py-1.5 bg-app-red hover:bg-app-redDark text-white font-title text-xs font-bold uppercase rounded-xl transition-all active:scale-95 flex items-center gap-1.5 shadow">
+              <i data-lucide="play" class="w-3 h-3 fill-current"></i> Rozpocznij
+            </button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterTrainingList(cat) {
+      document.querySelectorAll('.t-filter-btn').forEach(b => {
+        b.className = 't-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-card border border-app-border text-app-muted whitespace-nowrap';
+      });
+      document.getElementById(`tf-${cat.toLowerCase()}`).className = 't-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap';
+      renderTrainingCards(cat);
+    }
+
+    // ================= POSTY ZE ZDJĘCIAMI =================
+    function handleImageFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentSelectedImageBase64 = evt.target.result;
+          document.getElementById('photoUploadedNotice').innerText = "Zdjęcie wybrane ✓";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function publishNewPost() {
+      const text = document.getElementById('postTextInput').value.trim();
+      if (!text && !currentSelectedImageBase64) return;
+
+      posts.unshift({
+        id: Date.now(),
+        author: profile.name,
+        club: profile.club,
+        time: "Przed chwilą",
+        text: text,
+        image: currentSelectedImageBase64 || "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&auto=format&fit=crop&q=80",
+        likes: 0
+      });
+
+      document.getElementById('postTextInput').value = '';
+      currentSelectedImageBase64 = null;
+      document.getElementById('photoUploadedNotice').innerText = "Dodaj zdjęcie";
+      saveState();
+    }
+
+    function renderPostsFeed() {
+      const container = document.getElementById('profileFeedContainer');
+      container.innerHTML = posts.map(p => `
+        <div class="bg-app-card border border-app-border rounded-2xl overflow-hidden card-shadow">
+          <div class="p-3.5 flex items-center justify-between border-b border-app-border/60">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-slate-800 border border-app-border flex items-center justify-center text-xs font-bold text-app-red">
+                ${p.author.substring(0,2).toUpperCase()}
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white leading-tight">${p.author}</h4>
+                <p class="text-[10px] text-app-muted">${p.club} • ${p.time}</p>
+              </div>
+            </div>
+          </div>
+          ${p.text ? `<p class="px-3.5 py-2.5 text-xs text-gray-300 leading-relaxed">${p.text}</p>` : ''}
+          ${p.image ? `<div class="w-full h-52 bg-black overflow-hidden"><img src="${p.image}" class="w-full h-full object-cover" alt="Post" /></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // ================= WYSZUKIWARKA ZAWODNIKÓW =================
+    function renderFightersList() {
+      const query = (document.getElementById('fighterSearchInput')?.value || '').toLowerCase();
+      const container = document.getElementById('fightersListContainer');
+      const filtered = allFighters.filter(f => f.name.toLowerCase().includes(query) || f.club.toLowerCase().includes(query) || f.city.toLowerCase().includes(query));
+
+      container.innerHTML = filtered.map(f => `
+        <div class="bg-app-card border border-app-border rounded-xl p-3 flex items-center justify-between gap-3 card-shadow">
+          <div class="flex items-center gap-3">
+            <img src="${f.img}" class="w-11 h-11 rounded-xl object-cover border border-app-border" alt="${f.name}" />
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-white">${f.name}</span>
+                <span class="text-[9px] font-bold bg-sky-950/80 text-sky-400 px-1.5 py-0.2 rounded">${f.weight}</span>
+              </div>
+              <p class="text-[10px] text-app-muted">${f.club} • ${f.city}</p>
+              <span class="text-[10px] text-emerald-400 font-semibold">Rekord: ${f.record}</span>
+            </div>
+          </div>
+          <button onclick="alert('Wysłano zaproszenie na sparing do zawodnika: ${f.name}!')" class="px-2.5 py-1.5 bg-app-border hover:bg-app-borderLight text-gray-200 text-[10px] font-bold rounded-lg active:scale-95">
+            Sparing 🥊
+          </button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // ================= TABS & MODALS =================
+    function switchTab(tabId) {
+      ['home', 'training', 'progress', 'fighters', 'profile'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}`).classList.remove('block');
+        const navBtn = document.getElementById(`nav-btn-${t}`);
+        navBtn.classList.remove('text-app-red');
+        navBtn.classList.add('text-app-muted');
+      });
+
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-${tabId}`).classList.add('block');
+      const activeNav = document.getElementById(`nav-btn-${tabId}`);
+      activeNav.classList.remove('text-app-muted');
+      activeNav.classList.add('text-app-red');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function addSparringRound() { profile.sparrings += 1; saveState(); }
+    function openWeightUpdateModal() { document.getElementById('quickWeightInput').value = profile.currentWeight; toggleModal('weightUpdateModal', true); }
+    function saveQuickWeight() {
+      const val = parseFloat(document.getElementById('quickWeightInput').value);
+      if (val > 30 && val < 200) { profile.currentWeight = val; saveState(); toggleModal('weightUpdateModal', false); }
+    }
+
+    function openEditProfileModal() {
+      document.getElementById('inputName').value = profile.name;
+      document.getElementById('inputClub').value = profile.club;
+      document.getElementById('inputRecord').value = profile.record;
+      document.getElementById('inputCurrentWeight').value = profile.currentWeight;
+      toggleModal('editProfileModal', true);
+    }
+
+    function saveProfileForm(e) {
+      e.preventDefault();
+      profile.name = document.getElementById('inputName').value;
+      profile.club = document.getElementById('inputClub').value;
+      profile.record = document.getElementById('inputRecord').value;
+      profile.currentWeight = parseFloat(document.getElementById('inputCurrentWeight').value) || profile.currentWeight;
+      toggleModal('editProfileModal', false);
+      saveState();
+    }
+
+    function toggleModal(id, open) {
+      const el = document.getElementById(id);
+      el.classList.toggle('hidden', !open);
+      el.classList.toggle('flex', open);
+    }
+    function closeModal(id) { toggleModal(id, false); }
+
+    // Start
+    renderUI();
+  </script>
+</body>
+</html>
