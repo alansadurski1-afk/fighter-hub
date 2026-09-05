@@ -68,9 +68,6 @@
     .neon-border {
       box-shadow: 0 0 20px -3px rgba(255, 42, 95, 0.3);
     }
-    .neon-cyan {
-      box-shadow: 0 0 20px -3px rgba(0, 229, 255, 0.3);
-    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -112,14 +109,16 @@
   <div id="authScreen" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col justify-center items-center px-4 overflow-y-auto py-8">
     <div class="max-w-sm w-full space-y-4">
       
+      <!-- Logo nagłówka -->
       <div class="text-center space-y-1">
         <div class="w-14 h-14 bg-gradient-to-tr from-app-redDark to-app-red rounded-2xl flex items-center justify-center font-title font-black text-white text-2xl shadow-lg neon-border mx-auto mb-2 tracking-tighter">
           FH
         </div>
         <h1 class="font-title text-2xl font-black uppercase text-white tracking-wider">FIGHTER<span class="text-app-red">HUB</span></h1>
-        <p class="text-xs text-app-muted font-medium">Baza 300 Treningów & Społeczność MMA</p>
+        <p class="text-xs text-app-muted font-medium">Społeczność & Trening Zawodników MMA</p>
       </div>
 
+      <!-- Przełącznik -->
       <div id="authTabGroup" class="glass-panel rounded-2xl p-1 flex">
         <button onclick="switchAuthMode('login')" id="authTabLogin" class="flex-1 py-2 rounded-xl text-xs font-bold uppercase transition-all bg-app-red text-white shadow-md">
           Logowanie
@@ -129,7 +128,7 @@
         </button>
       </div>
 
-      <!-- FORMULARZ LOGOWANIA -->
+      <!-- 1. FORMULARZ LOGOWANIA -->
       <form id="loginForm" onsubmit="handleLoginStep1(event)" class="glass-panel rounded-3xl p-5 space-y-3.5 tab-animate">
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Adres E-mail</label>
@@ -144,7 +143,7 @@
         </button>
       </form>
 
-      <!-- 2FA -->
+      <!-- 2. WERYFIKACJA 2FA -->
       <form id="twoFactorForm" onsubmit="handleLoginStep2(event)" class="glass-panel rounded-3xl p-5 space-y-4 hidden modal-pop">
         <div class="text-center space-y-1">
           <div class="w-10 h-10 rounded-2xl bg-cyan-950/60 border border-cyan-800 text-cyan-400 flex items-center justify-center mx-auto mb-1">
@@ -167,7 +166,7 @@
         </button>
       </form>
 
-      <!-- REJESTRACJA -->
+      <!-- 3. REJESTRACJA Z WYBOREM SPORTÓW -->
       <form id="registerForm" onsubmit="handleRegister(event)" class="glass-panel rounded-3xl p-5 space-y-3 hidden tab-animate">
         <div>
           <label class="block text-[11px] font-bold text-gray-300 mb-1">Imię i Nazwisko</label>
@@ -277,13 +276,8 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- PRZYCISK STOPER RUND -->
-        <button onclick="toggleModal('roundTimerModal', true)" class="p-2 rounded-xl bg-app-card border border-cyan-800/60 hover:border-cyan-500 text-cyan-400 active:scale-95 transition-all" title="Stoper Rund MMA">
-          <i data-lucide="timer" class="w-5 h-5"></i>
-        </button>
-
         <!-- PRZYCISK POWIADOMIEŃ -->
-        <button onclick="toggleModal('notificationsModal', true)" class="relative p-2 rounded-xl bg-app-card border border-app-border hover:border-app-borderLight text-gray-200 active:scale-95 transition-all" title="Powiadomienia">
+        <button onclick="toggleModal('notificationsModal', true)" class="relative p-2 rounded-xl bg-app-card border border-app-border hover:border-app-borderLight text-gray-200 active:scale-95 transition-all">
           <i data-lucide="bell" class="w-5 h-5"></i>
           <span id="notifBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-app-red text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">0</span>
         </button>
@@ -320,6 +314,7 @@
             </span>
           </div>
 
+          <!-- Styl tagi -->
           <div class="flex flex-wrap gap-1.5 pt-1" id="homeDisciplinesTags"></div>
 
           <!-- Waga i stan formy -->
@@ -360,68 +355,43 @@
           </button>
         </div>
 
-        <!-- Szybkie Narzędzia Walki (Timer & Kalkulator Ścinania Wagi) -->
+        <!-- Szybkie Kafelki Funkcyjne -->
         <div class="grid grid-cols-2 gap-3">
-          <div onclick="toggleModal('roundTimerModal', true)" class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-cyan-500/50 transition-all active:scale-95">
-            <div class="p-2.5 rounded-xl bg-cyan-950/60 text-cyan-400 border border-cyan-800"><i data-lucide="timer" class="w-5 h-5"></i></div>
+          <div onclick="switchTab('fighters')" class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-app-red/50 transition-all active:scale-95">
+            <div class="p-2.5 rounded-xl bg-rose-950/60 text-app-red border border-rose-800"><i data-lucide="users" class="w-5 h-5"></i></div>
             <div>
-              <div class="text-xs font-black text-white font-title uppercase">Stoper Rund</div>
-              <div class="text-[10px] text-cyan-300">MMA / Boks / Tabata</div>
+              <div class="text-xs font-black text-white font-title uppercase">Zawodnicy</div>
+              <div class="text-[10px] text-app-muted">Sparingi & Czat</div>
             </div>
           </div>
 
-          <div onclick="toggleModal('weightCutCalcModal', true)" class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-amber-500/50 transition-all active:scale-95">
-            <div class="p-2.5 rounded-xl bg-amber-950/60 text-amber-400 border border-amber-800"><i data-lucide="droplet" class="w-5 h-5"></i></div>
+          <div onclick="toggleModal('notificationsModal', true)" class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 cursor-pointer hover:border-cyan-500/50 transition-all active:scale-95">
+            <div class="p-2.5 rounded-xl bg-cyan-950/60 text-cyan-400 border border-cyan-800"><i data-lucide="bell" class="w-5 h-5"></i></div>
             <div>
-              <div class="text-xs font-black text-white font-title uppercase">Fight Week</div>
-              <div class="text-[10px] text-amber-300">Ścinanie Wagi (H2O)</div>
+              <div class="text-xs font-black text-white font-title uppercase">Oferty</div>
+              <div class="text-[10px] text-app-muted">Powiadomienia</div>
             </div>
           </div>
         </div>
 
       </div>
 
-      <!-- ================= 2. TAB TRENING (BAZA 300 TRENINGÓW) ================= -->
+      <!-- ================= 2. TAB TRENING (8 PEŁNYCH PROGRAMÓW) ================= -->
       <div id="tab-training" class="space-y-4 hidden tab-animate">
         <div class="pt-1">
           <span class="text-[10px] font-black text-app-red uppercase tracking-widest">Katalog Walki</span>
-          <h2 class="font-title text-xl font-black uppercase text-white">Baza 300 Treningów MMA</h2>
-          <p class="text-xs text-app-muted">Kompletny zbiór technik stójkowych, zapaśniczych, parterowych i motoryki.</p>
+          <h2 class="font-title text-xl font-black uppercase text-white">Baza Treningów z Wideo</h2>
+          <p class="text-xs text-app-muted">Instruktaże techniczne i siłowe dla zawodników MMA.</p>
         </div>
 
-        <!-- Wyszukiwarka w 300 treningach -->
-        <div class="relative">
-          <i data-lucide="search" class="w-4 h-4 text-app-muted absolute left-3 top-3"></i>
-          <input 
-            type="text" 
-            id="trainingSearchInput" 
-            oninput="searchWorkoutsLive()" 
-            placeholder="Szukaj techniki (np. Gilotyna, Low Kick, Trap Bar, Klincz)..." 
-            class="w-full glass-panel rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-app-red transition-colors"
-          />
-        </div>
-
-        <!-- Filtry kategorii -->
         <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          <button onclick="filterTrainingList('ALL')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap" id="tf-all">Wszystkie (300)</button>
-          <button onclick="filterTrainingList('STRIKING')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-striking">🥊 Boks & K-1 (90)</button>
-          <button onclick="filterTrainingList('GRAPPLING')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-grappling">🤼 Zapasy & Siatka (75)</button>
-          <button onclick="filterTrainingList('BJJ')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-bjj">🥋 BJJ & Poddania (65)</button>
-          <button onclick="filterTrainingList('MOTOR')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-motor">⚡ Siła & Kondycja (70)</button>
+          <button onclick="filterTrainingList('ALL')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap" id="tf-all">Wszystkie (8)</button>
+          <button onclick="filterTrainingList('STRIKING')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-striking">🥊 Boks & K-1</button>
+          <button onclick="filterTrainingList('GRAPPLING')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-grappling">🤼 Zapasy & BJJ</button>
+          <button onclick="filterTrainingList('MOTOR')" class="t-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap" id="tf-motor">⚡ Siła & Moc</button>
         </div>
 
-        <!-- Informacja o liczbie wyników -->
-        <div class="text-[11px] text-app-muted font-semibold flex justify-between items-center px-1">
-          <span id="workoutResultsCounter">Wyświetlanie treningów...</span>
-        </div>
-
-        <!-- Kontener kart treningów -->
         <div class="space-y-3" id="trainingCardsContainer"></div>
-
-        <!-- Przycisk załaduj więcej (lazy load dla płynności) -->
-        <button id="loadMoreWorkoutsBtn" onclick="loadMoreWorkouts()" class="w-full py-3 glass-panel hover:border-app-borderLight text-xs font-bold uppercase text-white rounded-2xl active:scale-95 transition-all">
-          Pokaż kolejne treningi ↓
-        </button>
       </div>
 
       <!-- ================= 3. TAB ZAWODNICY (Z CZATEM I OFERTAMI) ================= -->
@@ -477,7 +447,7 @@
           <!-- INTERAKTYWNY WYBÓR TWOICH SZTUK WALKI -->
           <div class="bg-black/40 border border-app-border rounded-2xl p-3 space-y-2">
             <div class="flex justify-between items-center">
-              <span class="text-[10px] font-bold text-gray-300 uppercase block">Twoje Sztuki Walki:</span>
+              <span class="text-[10px] font-bold text-gray-300 uppercase block">Twoje Sztuki Walki (Wybierz):</span>
               <span class="text-[9px] text-emerald-400 font-semibold" id="stylesSavedNotice"></span>
             </div>
             <div class="flex flex-wrap gap-1.5" id="profileStylesSelector"></div>
@@ -528,7 +498,7 @@
         <i data-lucide="home" class="w-5 h-5"></i><span class="text-[9px] font-black uppercase tracking-wider">Główny</span>
       </button>
       <button onclick="switchTab('training')" id="nav-btn-training" class="flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-app-muted transition-all active:scale-75">
-        <i data-lucide="dumbbell" class="w-5 h-5"></i><span class="text-[9px] font-black uppercase tracking-wider">Trening (300)</span>
+        <i data-lucide="dumbbell" class="w-5 h-5"></i><span class="text-[9px] font-black uppercase tracking-wider">Trening</span>
       </button>
       <button onclick="switchTab('fighters')" id="nav-btn-fighters" class="flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-app-muted transition-all active:scale-75">
         <i data-lucide="users" class="w-5 h-5"></i><span class="text-[9px] font-black uppercase tracking-wider">Zawodnicy</span>
@@ -555,6 +525,7 @@
           </button>
         </div>
 
+        <!-- Czysta lista powiadomień na start -->
         <div class="space-y-2.5" id="notificationsList">
           <div class="text-center text-xs text-app-muted py-8" id="emptyNotifNotice">
             <i data-lucide="bell-off" class="w-8 h-8 text-app-muted mx-auto mb-2 opacity-50"></i>
@@ -572,6 +543,7 @@
   <!-- ================= MODAL 2: CZYSTY CZAT 1 NA 1 ================= -->
   <div id="chatModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3">
     <div class="glass-panel rounded-3xl max-w-sm w-full p-4 relative h-[80vh] flex flex-col justify-between modal-pop">
+      <!-- Nagłówek czatu -->
       <div class="flex justify-between items-center border-b border-app-border pb-2.5">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-app-redDark to-app-red text-white font-black text-xs flex items-center justify-center" id="chatTargetAvatar">
@@ -589,10 +561,12 @@
         </button>
       </div>
 
+      <!-- Wiadomości (czyste na start) -->
       <div class="flex-1 overflow-y-auto py-3 space-y-2.5 text-xs" id="chatMessagesContainer">
-        <!-- Renderowane dynamicznie (czyste) -->
+        <!-- Renderowane dynamicznie -->
       </div>
 
+      <!-- Wpisywanie wiadomości -->
       <form onsubmit="sendChatMessage(event)" class="flex gap-2 pt-2 border-t border-app-border">
         <input type="text" id="chatTextInput" required placeholder="Napisz wiadomość..." class="flex-1 bg-black/60 border border-app-border rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-app-red" />
         <button type="submit" class="p-2.5 bg-gradient-to-r from-app-red to-app-redDark text-white rounded-xl active:scale-95">
@@ -602,96 +576,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 3: STOPER RUND MMA / BOKSU (TIMER) ================= -->
-  <div id="roundTimerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden items-center justify-center p-3">
-    <div class="glass-panel rounded-3xl max-w-sm w-full p-5 relative modal-pop space-y-4">
-      <div class="flex justify-between items-center border-b border-app-border pb-2.5">
-        <div class="flex items-center gap-2">
-          <div class="p-1.5 bg-cyan-950/60 text-cyan-400 border border-cyan-800 rounded-xl">
-            <i data-lucide="timer" class="w-4 h-4"></i>
-          </div>
-          <h3 class="font-title text-sm font-black text-white uppercase">Stoper Rund Sparingowych</h3>
-        </div>
-        <button onclick="closeModal('roundTimerModal')" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Format wyboru -->
-      <div class="grid grid-cols-4 gap-1.5 text-center text-[10px] font-black">
-        <button onclick="setTimerPreset(3, 300, 60)" class="preset-btn p-2 rounded-xl bg-cyan-950/60 border border-cyan-800 text-cyan-400 active:scale-95">3x5 MMA</button>
-        <button onclick="setTimerPreset(5, 300, 60)" class="preset-btn p-2 rounded-xl bg-black/40 border border-app-border text-gray-300 active:scale-95">5x5 Pas</button>
-        <button onclick="setTimerPreset(3, 180, 60)" class="preset-btn p-2 rounded-xl bg-black/40 border border-app-border text-gray-300 active:scale-95">3x3 Boks</button>
-        <button onclick="setTimerPreset(8, 20, 10)" class="preset-btn p-2 rounded-xl bg-black/40 border border-app-border text-gray-300 active:scale-95">Tabata</button>
-      </div>
-
-      <!-- Duży zegar LED -->
-      <div class="bg-black/80 border border-app-border rounded-3xl p-6 text-center space-y-1">
-        <span class="text-xs font-black uppercase tracking-widest text-cyan-400" id="timerRoundDisplay">Runda 1 z 3</span>
-        <div class="font-title text-5xl font-black tracking-tight text-white" id="timerTimeDisplay">05:00</div>
-        <span class="text-[10px] font-bold text-app-muted uppercase" id="timerStatusDisplay">Gotowy do startu</span>
-      </div>
-
-      <!-- Przyciski start / pauza / reset -->
-      <div class="grid grid-cols-2 gap-2">
-        <button onclick="toggleTimer()" id="timerStartBtn" class="py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-title text-xs font-black uppercase rounded-2xl active:scale-95 shadow">
-          Start Sparingów ▶
-        </button>
-        <button onclick="resetTimer()" class="py-3 bg-black/50 border border-app-border text-gray-300 font-title text-xs font-black uppercase rounded-2xl active:scale-95">
-          Reset ↺
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL 4: KALKULATOR ŚCINANIA WAGI (H2O WATER CUT) ================= -->
-  <div id="weightCutCalcModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-3">
-    <div class="glass-panel rounded-3xl max-w-sm w-full p-5 relative modal-pop space-y-3.5">
-      <div class="flex justify-between items-center border-b border-app-border pb-2.5">
-        <div class="flex items-center gap-2">
-          <div class="p-1.5 bg-amber-950/60 text-amber-400 border border-amber-800 rounded-xl">
-            <i data-lucide="droplet" class="w-4 h-4"></i>
-          </div>
-          <h3 class="font-title text-sm font-black text-white uppercase">Fight Week Water Cut</h3>
-        </div>
-        <button onclick="closeModal('weightCutCalcModal')" class="p-1.5 rounded-lg bg-black/50 text-app-muted hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="bg-black/50 border border-app-border rounded-2xl p-3 space-y-2 text-xs">
-        <div class="flex justify-between">
-          <span class="text-app-muted">Aktualna waga:</span>
-          <span class="font-bold text-white" id="wcCurWeight">-- kg</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-app-muted">Limit docelowy:</span>
-          <span class="font-bold text-amber-400" id="wcTargetWeight">-- kg</span>
-        </div>
-        <div class="flex justify-between border-t border-app-border pt-1.5">
-          <span class="font-bold text-white">Do zbicia:</span>
-          <span class="font-black text-app-red" id="wcDiffWeight">-- kg</span>
-        </div>
-      </div>
-
-      <div class="space-y-2 text-xs">
-        <span class="text-[10px] font-bold text-app-muted uppercase">Plan ładowania i odwadniania (H2O Protocol):</span>
-        <div class="space-y-1.5 text-[11px]" id="wcPlanContainer">
-          <div class="p-2 rounded-xl bg-black/40 border border-app-border flex justify-between"><span>Poniedziałek (5 dni do wagi):</span> <strong class="text-cyan-400">7 Litrów Wody + Sól</strong></div>
-          <div class="p-2 rounded-xl bg-black/40 border border-app-border flex justify-between"><span>Wtorek (4 dni do wagi):</span> <strong class="text-cyan-400">6 Litrów Wody</strong></div>
-          <div class="p-2 rounded-xl bg-black/40 border border-app-border flex justify-between"><span>Środa (3 dni do wagi):</span> <strong class="text-cyan-400">4 Litry Wody</strong></div>
-          <div class="p-2 rounded-xl bg-black/40 border border-app-border flex justify-between"><span>Czwartek (2 dni do wagi):</span> <strong class="text-amber-400">1.5 Litra (Zero Soli)</strong></div>
-          <div class="p-2 rounded-xl bg-black/40 border border-app-border flex justify-between"><span>Piątek (Dzień Ważenia):</span> <strong class="text-app-red">0.2 L (Tylko sauna/pot)</strong></div>
-        </div>
-      </div>
-
-      <button onclick="closeModal('weightCutCalcModal')" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-title text-xs font-black uppercase rounded-2xl active:scale-95 shadow">
-        Rozumiem protokół ✓
-      </button>
-    </div>
-  </div>
-
-  <!-- ================= MODAL 5: PLAYER TRENINGOWY ================= -->
+  <!-- ================= MODAL 3: PLAYER TRENINGOWY ================= -->
   <div id="workoutPlayerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden items-center justify-center p-3">
     <div class="glass-panel rounded-3xl max-w-sm w-full p-4 relative max-h-[92vh] overflow-y-auto flex flex-col justify-between modal-pop">
       <div>
@@ -724,7 +609,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 6: ZAPIS WAGI ================= -->
+  <!-- ================= MODAL 4: ZAPIS WAGI ================= -->
   <div id="weightUpdateModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-panel rounded-3xl max-w-xs w-full p-5 relative modal-pop">
       <button onclick="closeModal('weightUpdateModal')" class="absolute top-4 right-4 text-app-muted p-1 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -735,7 +620,7 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT & BAZA 300 TRENINGÓW ================= -->
+  <!-- ================= JAVASCRIPT ================= -->
   <script>
     lucide.createIcons();
 
@@ -749,94 +634,93 @@
     let liveFightersList = [];
     let selectedImageBase64 = null;
     let currentDailyWorkout = null;
+    
+    // Polubienia w localStorage
     let userLikedPostIds = new Set(JSON.parse(localStorage.getItem('fh_liked_posts') || '[]'));
 
+    // Lista sztuk walki
     const ALL_COMBAT_STYLES = ['MMA', 'BJJ', 'Boks', 'Zapasy', 'Muay Thai', 'K-1', 'Judo', 'Kickboxing'];
 
-    // Czysty czat i powiadomienia
+    // Czyste historie czatów oraz powiadomień
     let activeChatPartner = null;
     let chatHistories = JSON.parse(localStorage.getItem('fh_chat_histories') || '{}');
     let activeNotifications = [];
 
-    // ================= GENERATOR BAZY DOKŁADNIE 300 TRENINGÓW MMA =================
-    const workoutPrograms = [];
-    const videoPool = [
-      'FSVcmMd9bR4', 'YsFK1MMDQgk', '4DHzLvLd-0Y', 'C-q6NYWPAVk', 
-      'Ll9bbPpuERo', '8bOGBjo3a08', '3M3iTCmKgAA', '8F854carMCE'
-    ];
-
-    const strikingThemes = [
-      "Jab Mastery & Kontrola Dystansu", "Kombinacja 1-2 & Slip Counter", "Lewy Hak na Wątrobę ze Zmianą Kąta",
-      "Overhand Right po Zmyłce Obalenia", "Low Kick & Calf Kick w Nerw Strzałkowy", "Podbródkowy z Rotacją Biodra w Klinczu",
-      "Check Hook przy Szarży Przeciwnika", "Front Kick (Teep) Stopujący Natarcie", "Kombinacja Holenderska 3 Ciosy + Low Kick",
-      "Switch Kick na Korpus ze Zmianą Pozycji", "Pivot 90 Stopni po Prawym Prostym", "Uniki Rotacyjne (Weave & Roll) pod Sierpami",
-      "Latające Kolano (Flying Knee) po Zwieńczeniu Presji", "Bokserska Praca Nóg & Ring Craft", "Dirty Boxing & Kontrola Karku w Klatce"
-    ];
-
-    const grapplingThemes = [
-      "Double Leg Takedown ze Zmianą Poziomu", "Single Leg z Przejściem do Run the Pipe", "Walka pod Siatką (Underhooks & Head Position)",
-      "Wywrotka z Klinczu (Inside Trip)", "Rzut Biodrowy (Harai Goshi) w Chwycie Klatkowym", "Obrona przed Obaleniem (Sprawl & Hip Drive)",
-      "Zejście do Nóg z Kontry po Ciosie Prostym", "Pinch Headlock & Wyciągnięcie Rywala ze Ściany", "Suples Zapaśniczy z Chwytu zza Pleców",
-      "Kontrola Nadgarstków (Wrist Control) pod Klatką", "Przejście do Pleców z Pozycji Pasa (Seatbelt Trip)", "Zgniatanie w Parterze (Heavy Top Pressure)"
-    ];
-
-    const bjjThemes = [
-      "Gilotyna ze Sprawlu (High Elbow Guillotine)", "D'Arce Choke ze Skrętu Przeciwnika", "Rear Naked Choke (Precyzyjne Dopięcie z Pleców)",
-      "Dźwignia na Kolano (Kneebar) z Pozycji 50/50", "Dźwignia Prosta na Stopę (Straight Ankle Lock)", "Kimura ze Półgardy z Przejściem do Dźwigni na Rękę",
-      "Przejście Gardy Torreado do Pozycji Bocznej", "Duszenie Trójkątne Rękami (Arm Triangle Choke)", "Balacha z Dosiadu (Armbar Transition)",
-      "Duszenie Anakonda ze Zmiany Poziomu", "Ucieczka z Dosiadu (Bridge & Upa Escape)", "Przetoczenie No-Gi z Motylej Gardy (Butterfly Sweep)"
-    ];
-
-    const motorThemes = [
-      "Moc Eksplozywna Ciosu & Trap Bar Jumps", "Wyrzuty Piłki Lekarskiej z Rotacji Bioder", "Interwały Klatkowe Shark Tank 5x5 Min",
-      "Martwy Ciąg Rumuński & Stabilizacja Dwugłowych", "Wyciskanie Żołnierskie pod Siłę Klinczu", "Sprinty na Bieżni Mechanicznej pod Kondycję MMA",
-      "Podciąganie z Ciężarem & Chwyt pod Gi/No-Gi", "Eksplozywne Wyskoki na Skrzynię Plyometryczną", "Trening Izometryczny Szyi & Ochrona Przed Nokautem",
-      "Kompleks Sztangowy (Barbell Complex) pod Wytrzymałość"
-    ];
-
-    // Budowanie 300 treningów
-    for (let i = 0; i < 300; i++) {
-      let category = 'STRIKING';
-      let badge = 'BOKS & K-1';
-      let title = '';
-      let desc = '';
-
-      if (i < 90) {
-        category = 'STRIKING';
-        badge = i % 2 === 0 ? 'BOKS MMA' : 'K-1 & MUAY THAI';
-        const t = strikingThemes[i % strikingThemes.length];
-        title = `Moduł #${i+1}: ${t}`;
-        desc = `Specjalistyczny trening uderzany nr ${i+1}. Skupienie na precyzji, transferze siły z bioder i natychmiastowym powrocie do bezpiecznej gardy.`;
-      } else if (i < 165) {
-        category = 'GRAPPLING';
-        badge = 'ZAPASY & KLINCZ';
-        const t = grapplingThemes[(i - 90) % grapplingThemes.length];
-        title = `Moduł #${i+1}: ${t}`;
-        desc = `Trening kontroli klatkowej i obaleń zapaśniczych nr ${i+1}. Dynamiczne przełamywanie środka ciężkości rywala.`;
-      } else if (i < 230) {
-        category = 'BJJ';
-        badge = 'BJJ NO-GI';
-        const t = bjjThemes[(i - 165) % bjjThemes.length];
-        title = `Moduł #${i+1}: ${t}`;
-        desc = `Poddania i kontrola parterowa nr ${i+1}. Zaawansowane techniki kończące walkę przed czasem w formule Submission Fighting.`;
-      } else {
-        category = 'MOTOR';
-        badge = 'SIŁA & MOC';
-        const t = motorThemes[(i - 230) % motorThemes.length];
-        title = `Moduł #${i+1}: ${t}`;
-        desc = `Przygotowanie motoryczne i tlenowe nr ${i+1}. Budowanie beztlenowej wytrzymałości niezbędnej do 3 i 5-rundowych bojów klatkowych.`;
+    // 8 PROGRAMÓW TRENINGOWYCH
+    const workoutPrograms = [
+      {
+        id: 0,
+        category: 'STRIKING',
+        badge: 'BOKS & K-1',
+        title: 'Jab Mastery: Podwójny Prosty & Pivot',
+        desc: 'Kompletny instruktaż wyprowadzania lewego prostego, kontroli dystansu i obrotu na nodze wykrocznej.',
+        videoId: 'FSVcmMd9bR4',
+        instructions: 'Pierwszy jab wyprowadzasz miękko w rękawice rywala jako badanie dystansu. Przy drugim wkręcasz mocno bark w szczękę i wykonujesz pivot (odejście pod kątem 90°).'
+      },
+      {
+        id: 1,
+        category: 'STRIKING',
+        badge: 'BOKS & MMA',
+        title: 'Kombinacja 1-2 & Slip Counter (Unik i Kontra)',
+        desc: 'Podstawowa kombinacja prostych z natychmiastowym zejściem z linii ciosu i ponowieniem prawym.',
+        videoId: 'YsFK1MMDQgk',
+        instructions: 'Wyprowadź kombinację Jab-Cross (1-2), zrób unik rotacyjny (slip) w prawo pod kontrującym prostym rywala i wystrzel prawym hakiem na dół.'
+      },
+      {
+        id: 2,
+        category: 'GRAPPLING',
+        badge: 'ZAPASY MMA',
+        title: 'Wejścia w Obie Nogi (Double Leg Takedown)',
+        desc: 'Zejście pod ciosami, zapięcie dłoni za udami przeciwnika i dynamiczne wyniesienie.',
+        videoId: '4DHzLvLd-0Y',
+        instructions: 'Zainicjuj prawy sierp. Gdy rywal unosi gardę, obniż poziom bioder, wbij kolano między jego stopy i zepnij ręce mocno za jego udami z głową przy żebrach.'
+      },
+      {
+        id: 3,
+        category: 'GRAPPLING',
+        badge: 'KLINCZ & SIATKA',
+        title: 'Walka pod Klatką (MMA Wall Wrestling)',
+        desc: 'Dociskanie rywala do siatki, kontrola nadgarstków, walka o podchwyty (underhooks) i krótkie łokcie.',
+        videoId: 'C-q6NYWPAVk',
+        instructions: 'Zabezpiecz głowę pod brodą rywala na siatce, walcz o obustronny podchwyt (double underhooks) i kontroluj biodra, uniemożliwiając mu ucieczkę.'
+      },
+      {
+        id: 4,
+        category: 'GRAPPLING',
+        badge: 'BJJ NO-GI',
+        title: 'Gilotyna & D\'Arce Choke ze Sprawlu',
+        desc: 'Błyskawiczne duszenia po obronie przed wejściem przeciwnika w nogi.',
+        videoId: 'Ll9bbPpuERo',
+        instructions: 'Gdy rywal nurkuje w nogi, wyrzuć biodra mocno w tył (sprawl), zablokuj jego szyję pod pachą i zapnij mocny chwyt bicepsem.'
+      },
+      {
+        id: 5,
+        category: 'GRAPPLING',
+        badge: 'BJJ NO-GI',
+        title: 'Rear Naked Choke (Duszenie zza Pleców)',
+        desc: 'Kontrola pozycji pleców (Back Mount), zakładanie haków i precyzyjne dopięcie duszenia.',
+        videoId: '8bOGBjo3a08',
+        instructions: 'Zabezpiecz chwyt seatbelt, ułóż zgięcie łokcia bezpośrednio pod krtanią rywala, schowaj drugą dłoń za jego karkiem i dociśnij klatkę piersiową.'
+      },
+      {
+        id: 6,
+        category: 'STRIKING',
+        badge: 'K-1 & MUAY THAI',
+        title: 'Low Kick & Calf Kick (Kopnięcie na Łydkę)',
+        desc: 'Destrukcyjne kopnięcia piszczelem w nerw strzałkowy oraz udo rywala.',
+        videoId: '3M3iTCmKgAA',
+        instructions: 'Zmarkuj lewy prosty, by rywal dociążył przednią nogę. Pod kątem 45 stopni wbij twardy piszczel w zewnętrzną część łydki przeciwnika.'
+      },
+      {
+        id: 7,
+        category: 'MOTOR',
+        badge: 'SIŁA & DYNAMIKA',
+        title: 'Moc Eksplozywna Ciosu & Trap Bar Jumps',
+        desc: 'Budowanie potężnej siły bioder, szybkości ciosu oraz kondycji turniejowej.',
+        videoId: '8F854carMCE',
+        instructions: 'Wskoki z gryfem Trap Bar (30% CM) x 5 powtórzeń w 4 seriach + 4 serie dynamicznych rzutów piłką lekarską o ścianę z rotacji bioder.'
       }
-
-      workoutPrograms.push({
-        id: i,
-        category: category,
-        badge: badge,
-        title: title,
-        desc: desc,
-        videoId: videoPool[i % videoPool.length],
-        instructions: `Wykonaj 5 intensywnych serii po 3 minuty z 60-sekundową przerwą. Zwracaj uwagę na detale biomechaniczne, napięcie core i prawidłowe oddychanie podczas fazy eksplozywnej.`
-      });
-    }
+    ];
 
     // ================= 1. SYSTEM AUTORYZACJI =================
     async function checkAuthSession() {
@@ -1091,11 +975,6 @@
       const diff = (currentUserProfile.current_weight - currentUserProfile.target_weight).toFixed(1);
       document.getElementById('homeWeightDiff').innerText = diff > 0 ? `Limit: ${currentUserProfile.target_weight} kg (+${diff} kg)` : `Limit: ${currentUserProfile.target_weight} kg (Waga zrobiona! 🎯)`;
 
-      // Wypełnienie kalkulatora ścinania wagi
-      document.getElementById('wcCurWeight').innerText = `${currentUserProfile.current_weight.toFixed(1)} kg`;
-      document.getElementById('wcTargetWeight').innerText = `${currentUserProfile.target_weight.toFixed(1)} kg`;
-      document.getElementById('wcDiffWeight').innerText = diff > 0 ? `${diff} kg` : `0 kg (Waga zrobiona)`;
-
       document.getElementById('profName').innerText = currentUserProfile.full_name;
       document.getElementById('profClub').innerHTML = `<i data-lucide="shield" class="w-3 h-3 text-app-red"></i> ${currentUserProfile.club} • ${currentUserProfile.city}`;
       document.getElementById('profDivision').innerText = `Kategoria ${currentUserProfile.weight_category} • Bilans: ${currentUserProfile.record}`;
@@ -1124,520 +1003,4 @@
       if (!currentUserProfile) return;
       let currentStyles = (currentUserProfile.medals || '').split(',').map(s => s.trim()).filter(Boolean);
       
-      if (currentStyles.includes(style)) {
-        currentStyles = currentStyles.filter(s => s !== style);
-      } else {
-        currentStyles.push(style);
-      }
-
-      const updatedStr = currentStyles.join(', ');
-      currentUserProfile.medals = updatedStr;
-      updateProfileUI();
-
-      const notice = document.getElementById('stylesSavedNotice');
-      notice.innerText = "Zapisano ✓";
-      setTimeout(() => notice.innerText = "", 2000);
-
-      await db.from('profiles').update({ medals: updatedStr }).eq('id', currentUserProfile.id);
-    }
-
-    async function handleAvatarFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file || !currentUserProfile) return;
-
-      const reader = new FileReader();
-      reader.onload = async (evt) => {
-        const base64 = evt.target.result;
-        currentUserProfile.avatar_url = base64;
-        updateProfileUI();
-        await db.from('profiles').update({ avatar_url: base64 }).eq('id', currentUserProfile.id);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // ================= 4. POSTY & SYSTEM LAJKOWANIA (+1) =================
-    async function loadPostsFromSupabase() {
-      const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        renderPosts(data);
-      }
-    }
-
-    function renderPosts(posts) {
-      const container = document.getElementById('profileFeedContainer');
-      if (!posts || posts.length === 0) {
-        container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak postów. Bądź pierwszym zawodnikiem, który doda wpis!</div>`;
-        return;
-      }
-
-      container.innerHTML = posts.map(p => {
-        const isLiked = userLikedPostIds.has(p.id);
-        const likeCount = (p.likes_count || 0) + (isLiked && !(p.likes_count > 0) ? 1 : 0);
-
-        return `
-        <div class="glass-panel rounded-3xl overflow-hidden space-y-2.5">
-          <div class="p-3.5 flex items-center justify-between border-b border-app-border/60">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-black/60 border border-app-border text-app-red font-title font-black flex items-center justify-center text-xs">
-                ${p.author_name ? p.author_name.substring(0,2).toUpperCase() : 'PL'}
-              </div>
-              <div>
-                <h4 class="text-xs font-black text-white uppercase">${p.author_name}</h4>
-                <p class="text-[10px] text-app-muted font-medium">${p.club} • ${new Date(p.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-              </div>
-            </div>
-            <span class="text-[9px] font-extrabold text-app-red bg-rose-950/40 border border-rose-900/60 px-2 py-0.5 rounded-lg uppercase">Wpis z maty</span>
-          </div>
-
-          ${p.text_content ? `<p class="px-3.5 text-xs text-gray-200 leading-relaxed">${p.text_content}</p>` : ''}
-          ${p.image_url ? `<div class="px-3"><img src="${p.image_url}" class="w-full h-52 object-cover rounded-2xl bg-black border border-app-border" /></div>` : ''}
-
-          <div class="px-3.5 pb-3 pt-1 flex items-center justify-between">
-            <button onclick="toggleLikePost('${p.id}', this)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 ${isLiked ? 'bg-rose-950/60 border-rose-600 text-app-red' : 'bg-black/40 border-app-border text-gray-400 hover:text-white'}">
-              <i data-lucide="heart" class="w-4 h-4 ${isLiked ? 'fill-current text-app-red' : ''}"></i>
-              <span class="text-xs font-bold like-counter">${likeCount}</span>
-            </button>
-            <span class="text-[10px] text-app-muted">FighterHub Social</span>
-          </div>
-        </div>
-        `;
-      }).join('');
-      lucide.createIcons();
-    }
-
-    async function toggleLikePost(postId, btnElement) {
-      const isLiked = userLikedPostIds.has(postId);
-      const counterEl = btnElement.querySelector('.like-counter');
-      let currentLikes = parseInt(counterEl.innerText) || 0;
-
-      if (isLiked) {
-        userLikedPostIds.delete(postId);
-        currentLikes = Math.max(0, currentLikes - 1);
-        btnElement.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 bg-black/40 border-app-border text-gray-400 hover:text-white";
-        btnElement.querySelector('i').classList.remove('fill-current', 'text-app-red');
-      } else {
-        userLikedPostIds.add(postId);
-        currentLikes += 1;
-        btnElement.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all active:scale-90 bg-rose-950/60 border-rose-600 text-app-red";
-        btnElement.querySelector('i').classList.add('fill-current', 'text-app-red');
-      }
-
-      counterEl.innerText = currentLikes;
-      localStorage.setItem('fh_liked_posts', JSON.stringify(Array.from(userLikedPostIds)));
-      await db.from('posts').update({ likes_count: currentLikes }).eq('id', postId);
-    }
-
-    async function publishPostToSupabase() {
-      if (!currentUserProfile) return;
-      const text = document.getElementById('postTextInput').value.trim();
-      if (!text && !selectedImageBase64) return;
-
-      const { error } = await db.from('posts').insert([{
-        author_name: currentUserProfile.full_name,
-        club: currentUserProfile.club,
-        text_content: text,
-        image_url: selectedImageBase64,
-        likes_count: 0
-      }]);
-
-      if (error) {
-        alert("Błąd: " + error.message);
-        return;
-      }
-
-      document.getElementById('postTextInput').value = '';
-      selectedImageBase64 = null;
-      document.getElementById('photoUploadedNotice').innerText = "Dodaj zdjęcie";
-      loadPostsFromSupabase();
-    }
-
-    function handleImageFileSelect(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          selectedImageBase64 = evt.target.result;
-          document.getElementById('photoUploadedNotice').innerText = "Zdjęcie wybrane ✓";
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    // ================= 5. CZAT 1 NA 1 (CZYSTY NA START) =================
-    function openDirectChat(fighterName) {
-      activeChatPartner = fighterName;
-      document.getElementById('chatTargetName').innerText = fighterName;
-      document.getElementById('chatTargetAvatar').innerText = fighterName.substring(0,2).toUpperCase();
-
-      if (!chatHistories[fighterName]) {
-        chatHistories[fighterName] = [];
-      }
-
-      renderChatMessages();
-      toggleModal('chatModal', true);
-    }
-
-    function renderChatMessages() {
-      const container = document.getElementById('chatMessagesContainer');
-      const messages = chatHistories[activeChatPartner] || [];
-
-      if (messages.length === 0) {
-        container.innerHTML = `
-          <div class="text-center text-xs text-app-muted py-12">
-            <i data-lucide="message-square" class="w-8 h-8 text-app-muted mx-auto mb-2 opacity-40"></i>
-            Rozpocznij pierwszą rozmowę z zawodnikiem <strong>${activeChatPartner}</strong>!
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      container.innerHTML = messages.map(m => {
-        const isMe = m.from === 'me';
-        return `
-          <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-            <div class="max-w-[80%] p-2.5 rounded-2xl ${isMe ? 'bg-app-red text-white rounded-br-sm' : 'bg-black/60 border border-app-border text-gray-200 rounded-bl-sm'}">
-              <p class="leading-relaxed text-[11px]">${m.text}</p>
-            </div>
-          </div>
-        `;
-      }).join('');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function sendChatMessage(e) {
-      e.preventDefault();
-      const input = document.getElementById('chatTextInput');
-      const msg = input.value.trim();
-      if (!msg || !activeChatPartner) return;
-
-      chatHistories[activeChatPartner].push({ from: 'me', text: msg });
-      localStorage.setItem('fh_chat_histories', JSON.stringify(chatHistories));
-      input.value = '';
-      renderChatMessages();
-
-      // Odpowiedź partnera
-      setTimeout(() => {
-        if (activeChatPartner) {
-          chatHistories[activeChatPartner].push({ from: 'them', text: 'Jasne, pasuje mi! Zapisuję w grafiku i widzimy się na macie.' });
-          localStorage.setItem('fh_chat_histories', JSON.stringify(chatHistories));
-          renderChatMessages();
-        }
-      }, 1500);
-    }
-
-    // ================= 6. POWIADOMIENIA I OFERTY SPARINGÓW =================
-    function sendSparringChallenge(targetName) {
-      alert(`🥊 Wysłano oficjalną ofertę sparingu do: ${targetName}! Oferta trafiła do powiadomień.`);
-      
-      const newNotif = {
-        id: 'notif_' + Date.now(),
-        sender: targetName,
-        text: `Zawodnik ${targetName} otrzymał Twoje zaproszenie na mocny sparing zadaniowy w klatce.`
-      };
-
-      activeNotifications.unshift(newNotif);
-      renderNotifications();
-      updateNotifBadge();
-    }
-
-    function renderNotifications() {
-      const list = document.getElementById('notificationsList');
-      if (activeNotifications.length === 0) {
-        list.innerHTML = `
-          <div class="text-center text-xs text-app-muted py-8" id="emptyNotifNotice">
-            <i data-lucide="bell-off" class="w-8 h-8 text-app-muted mx-auto mb-2 opacity-50"></i>
-            Brak nowych powiadomień.
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      list.innerHTML = activeNotifications.map(n => `
-        <div class="bg-black/50 border border-app-border rounded-2xl p-3 space-y-2.5" id="${n.id}">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-red-950/60 text-app-red font-black text-[11px] flex items-center justify-center border border-app-border">
-                ${n.sender.substring(0,2).toUpperCase()}
-              </div>
-              <div>
-                <span class="text-xs font-black text-white">${n.sender}</span>
-                <span class="text-[9px] text-app-muted block">Oferta Sparingowa</span>
-              </div>
-            </div>
-            <span class="text-[9px] font-extrabold text-amber-400 bg-amber-950/40 border border-amber-900/60 px-2 py-0.5 rounded">Nowa</span>
-          </div>
-          <p class="text-[11px] text-gray-300">${n.text}</p>
-          <div class="flex gap-2 pt-1">
-            <button onclick="acceptSparringOffer('${n.sender}', '${n.id}')" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-title text-[10px] font-black uppercase rounded-xl transition-all">
-              Akceptuj 🥊
-            </button>
-            <button onclick="rejectSparringOffer('${n.id}')" class="flex-1 py-1.5 bg-black/60 border border-app-border hover:border-rose-800 text-rose-400 font-title text-[10px] font-black uppercase rounded-xl transition-all">
-              Odrzuć ✕
-            </button>
-            <button onclick="openDirectChat('${n.sender}'); closeModal('notificationsModal');" class="p-1.5 bg-cyan-950/60 border border-cyan-800 text-cyan-400 rounded-xl">
-              <i data-lucide="message-square" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function acceptSparringOffer(sender, notifId) {
-      alert(`🥊 Zaakceptowano sparing z zawodnikiem: ${sender}! Możesz teraz dogadać godzinę na czacie.`);
-      activeNotifications = activeNotifications.filter(n => n.id !== notifId);
-      renderNotifications();
-      updateNotifBadge();
-    }
-
-    function rejectSparringOffer(notifId) {
-      activeNotifications = activeNotifications.filter(n => n.id !== notifId);
-      renderNotifications();
-      updateNotifBadge();
-    }
-
-    function updateNotifBadge() {
-      const badge = document.getElementById('notifBadge');
-      if (activeNotifications.length > 0) {
-        badge.innerText = activeNotifications.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    // ================= 7. RENDERER I WYSZUKIWARKA 300 TRENINGÓW =================
-    let currentCategoryFilter = 'ALL';
-    let currentSearchQuery = '';
-    let visibleWorkoutsCount = 15;
-
-    function renderTrainingCards(category = 'ALL', resetCount = true) {
-      if (resetCount) visibleWorkoutsCount = 15;
-      currentCategoryFilter = category;
-      const container = document.getElementById('trainingCardsContainer');
-      const counter = document.getElementById('workoutResultsCounter');
-      const loadMoreBtn = document.getElementById('loadMoreWorkoutsBtn');
-
-      let filtered = workoutPrograms;
-      if (category !== 'ALL') {
-        filtered = filtered.filter(w => w.category === category);
-      }
-      if (currentSearchQuery) {
-        filtered = filtered.filter(w => 
-          w.title.toLowerCase().includes(currentSearchQuery) || 
-          w.desc.toLowerCase().includes(currentSearchQuery) ||
-          w.badge.toLowerCase().includes(currentSearchQuery)
-        );
-      }
-
-      counter.innerText = `Znaleziono ${filtered.length} z 300 modułów treningowych`;
-
-      const visibleList = filtered.slice(0, visibleWorkoutsCount);
-
-      if (visibleList.length === 0) {
-        container.innerHTML = `<div class="text-center text-xs text-app-muted py-10">Brak treningów pasujących do filtra.</div>`;
-        loadMoreBtn.classList.add('hidden');
-        return;
-      }
-
-      container.innerHTML = visibleList.map(w => `
-        <div class="glass-panel rounded-3xl p-4 space-y-2 interactive-card">
-          <div class="flex justify-between items-center">
-            <span class="text-[9px] font-extrabold text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded-md uppercase">${w.badge}</span>
-            <span class="text-[9px] font-mono text-app-muted">#${w.id + 1}/300</span>
-          </div>
-          <h3 class="font-title text-sm font-black text-white uppercase">${w.title}</h3>
-          <p class="text-xs text-app-muted leading-relaxed">${w.desc}</p>
-          <button onclick="startInteractiveWorkout(${w.id})" class="w-full mt-2 py-2.5 bg-black/50 border border-app-border hover:border-app-red text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow">
-            <i data-lucide="play" class="w-3.5 h-3.5 fill-current text-app-red"></i> Rozpocznij Instruktaż
-          </button>
-        </div>
-      `).join('');
-
-      if (visibleWorkoutsCount >= filtered.length) {
-        loadMoreBtn.classList.add('hidden');
-      } else {
-        loadMoreBtn.classList.remove('hidden');
-      }
-
-      lucide.createIcons();
-    }
-
-    function loadMoreWorkouts() {
-      visibleWorkoutsCount += 20;
-      renderTrainingCards(currentCategoryFilter, false);
-    }
-
-    function filterTrainingList(cat) {
-      document.querySelectorAll('.t-filter-btn').forEach(b => {
-        b.className = 't-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-panel text-app-muted whitespace-nowrap transition-all';
-      });
-      document.getElementById(`tf-${cat.toLowerCase()}`).className = 't-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-app-red text-white whitespace-nowrap transition-all shadow-md';
-      renderTrainingCards(cat, true);
-    }
-
-    function searchWorkoutsLive() {
-      currentSearchQuery = document.getElementById('trainingSearchInput').value.toLowerCase().trim();
-      renderTrainingCards(currentCategoryFilter, true);
-    }
-
-    function startInteractiveWorkout(id) {
-      activeWorkout = workoutPrograms[id];
-      document.getElementById('playerWorkoutTitle').innerText = activeWorkout.title;
-      
-      const embedUrl = `https://www.youtube.com/embed/${activeWorkout.videoId}?rel=0&modestbranding=1`;
-      document.getElementById('playerVideoIframe').src = embedUrl;
-      document.getElementById('playerDirectYoutubeLink').href = `https://www.youtube.com/watch?v=${activeWorkout.videoId}`;
-
-      document.getElementById('playerDrillTitle').innerText = activeWorkout.title;
-      document.getElementById('playerDrillInstructions').innerText = activeWorkout.instructions;
-      toggleModal('workoutPlayerModal', true);
-    }
-
-    async function finishWorkoutInSupabase() {
-      if (currentUserProfile) {
-        const newCount = (currentUserProfile.workouts_count || 0) + 1;
-        await db.from('profiles').update({ workouts_count: newCount }).eq('id', currentUserProfile.id);
-        currentUserProfile.workouts_count = newCount;
-      }
-
-      alert(`🏆 Trening "${activeWorkout.title}" został zaliczony i zapisany!`);
-      document.getElementById('playerVideoIframe').src = "";
-      toggleModal('workoutPlayerModal', false);
-    }
-
-    // ================= 8. STOPER RUND MMA / BOKSU (AUDIO SYNTEZA) =================
-    let timerInterval = null;
-    let timerTotalRounds = 3;
-    let timerCurrentRound = 1;
-    let timerWorkSec = 300;
-    let timerRestSec = 60;
-    let timerCurrentSec = 300;
-    let timerIsRest = false;
-    let timerRunning = false;
-
-    // Generator dźwięku gongu przez Web Audio API (nie wymaga plików mp3!)
-    function playBeep(freq = 600, duration = 0.3) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function setTimerPreset(rounds, work, rest) {
-      resetTimer();
-      timerTotalRounds = rounds;
-      timerWorkSec = work;
-      timerRestSec = rest;
-      timerCurrentSec = work;
-      updateTimerDisplay();
-    }
-
-    function updateTimerDisplay() {
-      const min = Math.floor(timerCurrentSec / 60);
-      const sec = timerCurrentSec % 60;
-      document.getElementById('timerTimeDisplay').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-      document.getElementById('timerRoundDisplay').innerText = `Runda ${timerCurrentRound} z ${timerTotalRounds}`;
-      document.getElementById('timerStatusDisplay').innerText = timerIsRest ? "PRZERWA (Odpocznij & Napij się)" : "WALKA / PRACA!";
-      document.getElementById('timerStatusDisplay').className = timerIsRest ? "text-[10px] font-bold text-amber-400 uppercase" : "text-[10px] font-bold text-emerald-400 uppercase";
-    }
-
-    function toggleTimer() {
-      const btn = document.getElementById('timerStartBtn');
-      if (timerRunning) {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        btn.innerText = "Wznów Sparing ▶";
-        btn.className = "py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-title text-xs font-black uppercase rounded-2xl active:scale-95 shadow";
-      } else {
-        playBeep(880, 0.4);
-        timerRunning = true;
-        btn.innerText = "Pauza ⏸";
-        btn.className = "py-3 bg-rose-600 text-white font-title text-xs font-black uppercase rounded-2xl active:scale-95 shadow";
-        
-        timerInterval = setInterval(() => {
-          timerCurrentSec--;
-          if (timerCurrentSec <= 0) {
-            playBeep(440, 0.6);
-            if (!timerIsRest) {
-              if (timerCurrentRound >= timerTotalRounds) {
-                resetTimer();
-                alert("🔔 KONIEC SPARINGÓW! Doskonała robota na macie!");
-                return;
-              }
-              timerIsRest = true;
-              timerCurrentSec = timerRestSec;
-            } else {
-              timerIsRest = false;
-              timerCurrentRound++;
-              timerCurrentSec = timerWorkSec;
-            }
-          }
-          updateTimerDisplay();
-        }, 1000);
-      }
-    }
-
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timerRunning = false;
-      timerCurrentRound = 1;
-      timerIsRest = false;
-      timerCurrentSec = timerWorkSec;
-      const btn = document.getElementById('timerStartBtn');
-      if (btn) {
-        btn.innerText = "Start Sparingów ▶";
-        btn.className = "py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-title text-xs font-black uppercase rounded-2xl active:scale-95 shadow";
-      }
-      updateTimerDisplay();
-    }
-
-    // ================= 9. BAZA ZAWODNIKÓW (SUPABASE) =================
-    async function loadFightersFromSupabase() {
-      const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        liveFightersList = data;
-        renderFighters(liveFightersList);
-        updateTotalUsersCount();
-      }
-    }
-
-    function renderFighters(list) {
-      const container = document.getElementById('fightersListContainer');
-      if (!list || list.length === 0) {
-        container.innerHTML = `<div class="text-center text-xs text-app-muted py-6">Brak zarejestrowanych zawodników.</div>`;
-        return;
-      }
-
-      container.innerHTML = list.map(f => {
-        const initials = f.full_name ? f.full_name.substring(0,2).toUpperCase() : 'PL';
-        const hasAvatar = f.avatar_url && f.avatar_url.startsWith('data:image');
-        const styles = f.medals || 'MMA';
-
-        return `
-        <div class="glass-panel rounded-2xl p-3 flex items-center justify-between gap-2 interactive-card">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-xl overflow-hidden bg-black/60 border border-app-border flex items-center justify-center font-title font-black text-xs text-app-red">
-              ${hasAvatar ? `<img src="${f.avatar_url}" class="w-full h-full object-cover" />` : initials}
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-black text-white uppercase">${f.full_name}</span>
-                <span class="text-[9px] font-bold bg-cyan-950/50 text-cyan-400 border border-cyan-800 px-1.5 py-0.2 rounded">${f.weight_category}</span>
-              </div>
-              <p class="text-[10px] text-app-muted">${f.club} • ${f.city}</p>
-              <span class="text-[10px] text-rose-400 font-bold">🥋 ${styles}</span>
-            </div>
-          </div>
- 
+      if (currentStyles
